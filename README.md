@@ -17,6 +17,7 @@ Libraries to use
   - https://github.com/miso-belica/sumy
   - http://libots.sourceforge.net/
   - https://github.com/nltk/nltk
+  - https://github.com/Rotten194/summarize.py
 
 ```python
 # -*- coding: utf8 -*-
