@@ -12,3 +12,8 @@ context
   - Taking a term, and giving you context on that term.
 
 - We can build initial term base by scraping articles, and seeing things that are relevent.
+
+Libraries to use
+  - https://github.com/miso-belica/sumy
+  - http://libots.sourceforge.net/
+  - https://github.com/nltk/nltk
