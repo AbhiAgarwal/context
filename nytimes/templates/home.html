@@ -1,0 +1,14 @@
+<!doctype html>
+{% if article %}
+	<title>{{ article['headline']['print_headline']|safe }}</title>
+	<h1>{{ article['headline']['print_headline']|safe }}</h1>
+	<p>Summary: {{ article['snippet']|safe }}</p>
+	<p>Definition: </p>
+	<ul>
+		{% for eachKeyword in article['keywords'] %}
+			<li> {{ eachKeyword['definition'] }} </li>
+		{% endfor %}
+	</ul>
+	<p>Timeline: </p>
+	<p>Article: {{ article['allText']|safe }}
+{% endif %}
