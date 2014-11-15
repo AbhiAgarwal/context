@@ -1,0 +1,825 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+<html>
+<title>BLPAPI C++</title>
+<html>
+<pre>
+/* Copyright 2012. Bloomberg Finance L.P.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:  The above
+ * copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+// blpapi_schema.h                                                    -*-C++-*-
+#ifndef INCLUDED_BLPAPI_SCHEMA
+#define INCLUDED_BLPAPI_SCHEMA
+
+//@PURPOSE: Provide a representation of a schema describing structured messages
+//
+//@CLASSES:
+// blpapi::SchemaStatus: the version status of a schema
+// blpapi::SchemaTypeDefinition: definitions of schema types
+// blpapi::SchemaElementDefinition: definitions of message elements
+//
+//@DESCRIPTION: This component provides types for representing schemata which
+// describe structured messages. Such schemata consist of two distinct kinds of
+// definitions: &quot;type&quot; definitions (represented by &#39;SchemaTypeDefinition&#39;
+// objects) declare types than can be used within other definitions (of both
+// kinds); an &quot;element&quot; definition defines a specific field by associating a
+// field identifier with a particular type, as well as the number of values of
+// that type that are permitted to be associated with that identifier.
+
+#ifndef INCLUDED_BLPAPI_CONSTANT
+#include &lt;blpapi_constant.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_DEFS
+#include &lt;blpapi_defs.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_EXCEPTION
+#include &lt;blpapi_exception.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_NAME
+#include &lt;blpapi_name.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_STREAMPROXY
+#include &lt;blpapi_streamproxy.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_TYPES
+#include &lt;blpapi_types.h&gt;
+#endif
+
+typedef void *blpapi_SchemaElementDefinition_t;
+typedef void *blpapi_SchemaTypeDefinition_t;
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+BLPAPI_EXPORT
+blpapi_Name_t *blpapi_SchemaElementDefinition_name(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+const char *blpapi_SchemaElementDefinition_description(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+int blpapi_SchemaElementDefinition_status(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+blpapi_SchemaTypeDefinition_t *blpapi_SchemaElementDefinition_type(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+size_t blpapi_SchemaElementDefinition_numAlternateNames(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+blpapi_Name_t *blpapi_SchemaElementDefinition_getAlternateName(
+        const blpapi_SchemaElementDefinition_t *field,
+        size_t index);
+
+
+//   -- NOT USED or IMPLEMENTED: removing
+// BLPAPI_EXPORT
+// size_t blpapi_SchemaElementDefinition_numNames(
+//         const blpapi_SchemaElementDefinition_t *field);
+
+
+BLPAPI_EXPORT
+size_t blpapi_SchemaElementDefinition_minValues(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+size_t blpapi_SchemaElementDefinition_maxValues(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+int blpapi_SchemaElementDefinition_print(
+        const blpapi_SchemaElementDefinition_t *element,
+        blpapi_StreamWriter_t streamWriter,
+        void *userStream,
+        int level,
+        int spacesPerLevel);
+
+BLPAPI_EXPORT
+void blpapi_SchemaElementDefinition_setUserData(
+        blpapi_SchemaElementDefinition_t *field,
+        void *userdata);
+
+BLPAPI_EXPORT
+void *blpapi_SchemaElementDefinition_userData(
+        const blpapi_SchemaElementDefinition_t *field);
+
+BLPAPI_EXPORT
+blpapi_Name_t *blpapi_SchemaTypeDefinition_name(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+const char *blpapi_SchemaTypeDefinition_description(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_status(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_datatype(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_isComplexType(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_isSimpleType(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_isEnumerationType(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_isComplex(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_isSimple(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_isEnumeration(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+
+BLPAPI_EXPORT
+size_t blpapi_SchemaTypeDefinition_numElementDefinitions(
+        const blpapi_SchemaTypeDefinition_t *type);
+
+BLPAPI_EXPORT
+blpapi_SchemaElementDefinition_t*
+blpapi_SchemaTypeDefinition_getElementDefinition(
+        const blpapi_SchemaTypeDefinition_t *type,
+        const char *nameString,
+        const blpapi_Name_t *name);
+
+BLPAPI_EXPORT
+blpapi_SchemaElementDefinition_t*
+blpapi_SchemaTypeDefinition_getElementDefinitionAt(
+        const blpapi_SchemaTypeDefinition_t *type,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_SchemaTypeDefinition_print(
+        const blpapi_SchemaTypeDefinition_t *element,
+        blpapi_StreamWriter_t streamWriter,
+        void *userStream,
+        int level,
+        int spacesPerLevel);
+
+BLPAPI_EXPORT
+void blpapi_SchemaTypeDefinition_setUserData(
+        blpapi_SchemaTypeDefinition_t *element,
+        void *userdata);
+
+BLPAPI_EXPORT
+void *blpapi_SchemaTypeDefinition_userData(
+        const blpapi_SchemaTypeDefinition_t *element);
+
+BLPAPI_EXPORT
+blpapi_ConstantList_t*
+blpapi_SchemaTypeDefinition_enumeration(
+        const blpapi_SchemaTypeDefinition_t *element);
+
+
+#ifdef __cplusplus
+}
+
+#ifndef INCLUDED_IOSFWD
+#include &lt;iosfwd&gt;
+#define INCLUDED_IOSFWD
+#endif
+
+namespace BloombergLP {
+namespace blpapi {
+                         // ===================
+                         // struct SchemaStatus
+                         // ===================
+
+struct SchemaStatus {
+    // This &#39;struct&#39; provides a namespace for enumerating the possible
+    // deprecation statuses of a schema element or type.
+
+    enum Value {
+        ACTIVE              = BLPAPI_STATUS_ACTIVE,     // This item is current
+                                                        // and may appear in
+                                                        // Messages
+        DEPRECATED          = BLPAPI_STATUS_DEPRECATED, // This item is current
+                                                        // and may appear in
+                                                        // Messages but will be
+                                                        // removed in due
+                                                        // course
+        INACTIVE            = BLPAPI_STATUS_INACTIVE,   // This item is not
+                                                        // current and will not
+                                                        // appear in Messages
+        PENDING_DEPRECATION = BLPAPI_STATUS_PENDING_DEPRECATION
+                                                        // This item is
+                                                        // expected to be
+                                                        // deprecated in the
+                                                        // future; clients are
+                                                        // advised to migrate
+                                                        // away from use of
+                                                        // this item.
+    };
+};
+
+class SchemaTypeDefinition;
+
+                       // =============================
+                       // class SchemaElementDefinition
+                       // =============================
+
+class SchemaElementDefinition {
+    // This class implements the definition of an individual field within a
+    // schema type. An element is defined by an identifer/name, a type, and the
+    // number of values of that type that may be associated with the
+    // identifier/name. In addition, this class offers access to metadata
+    // providing a description and deprecation status for the field. Finally,
+    // &#39;SchemaElementDefinition&#39; provides an interface for associating
+    // arbitrary user-defined data (specified as a &#39;void*&#39;) with an element
+    // definition.
+    //
+    // &#39;SchemaElementDefinition&#39; objects are returned by &#39;Service&#39; and
+    // &#39;Operation&#39; objects to define the content of requests, replies and
+    // events. The &#39;SchemaTypeDefinition&#39; returned by
+    // &#39;SchemaElementDefinition::typeDefinition()&#39; may itself provide access to
+    // &#39;SchemaElementDefinition&#39; objects when the schema contains nested
+    // elements. (See the &#39;SchemaTypeDefinition&#39; documentation for more
+    // information on complex types.)
+    //
+    // An optional element has &#39;minValues() == 0&#39;.
+    //
+    // A mandatory element has &#39;minValues() &gt;= 1&#39;.
+    //
+    // An element that must constain a single value has
+    // &#39;minValues() == maxValues() == 1&#39;.
+    //
+    // An element containing an array has &#39;maxValues() &gt; 1&#39;.
+    //
+    // An element with no upper limit on the number of values has
+    // &#39;maxValues() == UNBOUNDED&#39;.
+    //
+    // &#39;SchemaElementDefinition&#39; objects are read-only, with the exception of a
+    // single &#39;void*&#39; attribute for storing user data.
+    // &#39;SchemaElementDefinition&#39; objects have *reference* *semantics* with
+    // respect to this user data field: calling &#39;c.setUserData(void*)&#39; modifies
+    // the user data associated with &#39;c&#39;, as well as that associated with all
+    // copies of &#39;c&#39;. As a result, functions which set or read this attribute
+    // are *NOT* per-object thread-safe. Clients must syncrhonize such
+    // operations across *all* *copies* of an object.
+    //
+    // Application clients need never create fresh &#39;SchemaElementDefinition&#39;
+    // objects directly; applications will typically work with copies of
+    // objects returned by other &#39;blpapi&#39; components.
+
+    blpapi_SchemaElementDefinition_t *d_impl_p;
+
+  public:
+    // Constants used in the SchemaElementDefinition interface.
+
+    enum {
+        UNBOUNDED = BLPAPI_ELEMENTDEFINITION_UNBOUNDED  // Indicates an array
+                                                        // has an unbounded
+                                                        // number of values.
+    };
+
+    SchemaElementDefinition(blpapi_SchemaElementDefinition_t *handle);
+
+    ~SchemaElementDefinition();
+        // Destroy this object.
+
+    // MANIPULATORS
+
+    void setUserData(void *userData);
+        // Set the user data associated with this &#39;SchemaElementDefinition&#39; --
+        // and all copies of this &#39;SchemaElementDefinition&#39; -- to the specified
+        // &#39;userData&#39;. Clients are responsible for synchronizing calls to this
+        // function, and to &#39;userData()&#39;, across all copies of this
+        // &#39;SchemaElementDefinition&#39; object.
+
+    // ACCESSORS
+
+    Name name() const;
+        // Return the name identifying this element within its containing
+        // structure/type.
+
+    const char *description() const;
+        // Return a null-terminated string containing a human-readable
+        // description of this element. This pointer is valid until this
+        // &#39;SchemaElementDefinition&#39; is destroyed.
+
+    int status() const;
+        // Return the deprecation status, as a &#39;SchemaStatus::Value&#39;, of this
+        // element.
+
+    const SchemaTypeDefinition typeDefinition() const;
+        // Return the type of values contained in this element.
+
+    size_t minValues() const;
+        // Return the minimum number of occurrences of this element. This value
+        // is always greater than or equal to zero.
+
+    size_t maxValues() const ;
+        // Return the maximum number of occurrences of this element. This value
+        // is always greater than or equal to one.
+
+    size_t numAlternateNames() const;
+        // Return the number of alternate names for this element.
+
+    Name getAlternateName(size_t index) const;
+        // Return the specified &#39;index&#39;th alternate name for this element. If
+        // &#39;index &gt;=numAlternateNames()&#39; an exception is thrown.
+
+    void *userData() const;
+        // Return the user data associated with this &#39;SchemaElementDefinition&#39;.
+        // If no user data has been associated with this
+        // &#39;SchemaElementDefinition&#39; then return 0. Clients are responsible for
+        // synchronizing calls to this function with calls to
+        // &#39;setUserData(void*)&#39; made on not only this
+        // &#39;SchemaElementDefinition&#39;, but also all copies of this
+        // &#39;SchemaElementDefinition&#39;. Note that &#39;SchemaElementDefinition&#39;
+        // objects have reference semantics: this function will reflect the
+        // last value set on *any* copy of this &#39;SchemaElementDefinition&#39;.
+
+    std::ostream&amp; print(std::ostream&amp; stream,
+                        int level=0,
+                        int spacesPerLevel=4) const;
+        // Format this SchemaElementDefinition to the specified output &#39;stream&#39;
+        // at the (absolute value of) the optionally specified indentation
+        // &#39;level&#39; and return a reference to &#39;stream&#39;. If &#39;level&#39; is specified,
+        // optionally specify &#39;spacesPerLevel&#39;, the number of spaces per
+        // indentation level for this and all of its nested objects. If &#39;level&#39;
+        // is negative, suppress indentation of the first line. If
+        // &#39;spacesPerLevel&#39; is negative, format the entire output on one line,
+        // suppressing all but the initial indentation (as governed by
+        // &#39;level&#39;).
+
+    blpapi_SchemaElementDefinition_t *impl() const;
+};
+
+// FREE OPERATORS
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream,
+                         const SchemaElementDefinition&amp; element);
+    // Write the value of the specified &#39;element&#39; object to the specified
+    // output &#39;stream&#39; in a single-line format, and return a reference to
+    // &#39;stream&#39;.  If &#39;stream&#39; is not valid on entry, this operation has no
+    // effect.  Note that this human-readable format is not fully specified,
+    // can change without notice, and is logically equivalent to:
+    //..
+    //  print(stream, 0, -1);
+    //..
+
+                       // ==========================
+                       // class SchemaTypeDefinition
+                       // ==========================
+
+class SchemaTypeDefinition {
+    // This class implements a representation of a &quot;type&quot; that can be used
+    // within a schema, including both simple atomic types (integers, dates,
+    // strings, etc.) as well as &quot;complex&quot; types defined a sequences of or
+    // choice among a collection (named) elements, each of which is in turn
+    // described by another type. In addition to accessors for the type&#39;s
+    // structure, this class also offers access to metadata providing a
+    // description and deprecation status for the type. Finally,
+    // &#39;SchemaTypeDefinition&#39; provides an interface for associating arbitrary
+    // user-defined data (specified as a &#39;void*&#39;) with a type definition.
+    //
+    // Each &#39;SchemaElementDefinition&#39; object is associated with a single
+    // &#39;SchemaTypeDefinition&#39;; one &#39;SchemaTypeDefinition&#39; may be used by zero,
+    // one, or many &#39;SchemaElementDefinition&#39; objects.
+    //
+    // &#39;SchemaTypeDefinition&#39; objects are read-only, with the exception of a
+    // single &#39;void*&#39; attribute for storing user data. &#39;SchemaTypeDefinition&#39;
+    // objects have *reference* *semantics* with respect to this user data
+    // field: calling &#39;c.setUserData(void*)&#39; modifies the user data associated
+    // with &#39;c&#39;, as well as that associated with all copies of &#39;c&#39;. As a
+    // result, functions which set or read this attribute are *NOT* per-object
+    // thread-safe. Clients must syncrhonize such operations across *all*
+    // *copies* of an object.
+    //
+    // Application clients need never create fresh &#39;SchemaTypeDefinition&#39;
+    // objects directly; applications will typically work with copies of
+    // objects returned by other &#39;blpapi&#39; components.
+
+    blpapi_SchemaTypeDefinition_t *d_impl_p;
+
+  public:
+    SchemaTypeDefinition(blpapi_SchemaTypeDefinition_t *handle);
+
+    ~SchemaTypeDefinition();
+        // Destroy this object.
+
+    // MANIPULATORS
+
+    void setUserData(void *userData);
+        // Set the user data associated with this &#39;SchemaTypeDefinition&#39; -- and
+        // all copies of this &#39;SchemaTypeDefinition&#39; -- to the specified
+        // &#39;userData&#39;. Clients are responsible for synchronizing calls to this
+        // function, and to &#39;userData()&#39;, across all copies of this
+        // &#39;SchemaTypeDefinition&#39; object.
+
+    // ACCESSORS
+
+    int datatype() const;
+        // Return the &#39;DataType&#39; of this &#39;SchemaTypeDefinition&#39;.
+
+    Name name() const;
+        // Return the name of this &#39;SchemaTypeDefinition&#39;.
+
+    const char *description() const;
+        // Return a null-terminated string which contains a human readable
+        // description of this &#39;SchemaTypeDefinition&#39;. The returned pointer
+        // remains valid until this &#39;SchemaTypeDefinition&#39; is destroyed.
+
+    int status() const;
+        // Return the deprecation status, as a &#39;SchemaStatus::Value&#39;, of this
+        // &#39;SchemaTypeDefinition&#39;.
+
+    size_t numElementDefinitions() const;
+        // Return the number of &#39;SchemaElementDefinition&#39; objects contained by
+        // this &#39;SchemaTypeDefinition&#39;. If this &#39;SchemaTypeDefinition&#39; is
+        // neither a choice nor a sequence this will return 0.
+
+    bool isComplexType() const;
+        // Return &#39;true&#39; if this &#39;SchemaTypeDefinition&#39; represents a sequence
+        // or choice type.
+
+    bool isSimpleType() const;
+        // Return &#39;true&#39; if this &#39;SchemaTypeDefinition&#39; represents neither a
+        // sequence nor a choice type.
+
+    bool isEnumerationType() const;
+        // Return &#39;true&#39; if this &#39;SchemaTypeDefinition&#39; represents an enumeration
+        // type.
+
+    bool hasElementDefinition(const Name&amp; name) const;
+        // Return &#39;true&#39; if this &#39;SchemaTypeDefinition&#39; contains an element
+        // with the specified &#39;name&#39;; otherwise returns &#39;false&#39;.
+
+    bool hasElementDefinition(const char *name) const;
+        // Return &#39;true&#39; if this &#39;SchemaTypeDefinition&#39; contains an element
+        // with the specified &#39;name&#39;; otherwise returns &#39;false&#39;.
+
+    SchemaElementDefinition getElementDefinition(const Name&amp; name) const;
+        // Return the definition of the element identified by the specified
+        // &#39;name&#39;. If &#39;hasElementDefinition(name) != true&#39; then an exception is
+        // thrown.
+
+    SchemaElementDefinition getElementDefinition(const char *nameString) const;
+        // Return the definition of the element identified by the specified
+        // &#39;nameString&#39;. If &#39;hasElementDefinition(nameString) != true&#39; then an
+        // exception is thrown.
+
+    SchemaElementDefinition getElementDefinition(size_t index) const;
+        // Return the definition of the element a the specified &#39;index&#39; in the
+        // sequence of elements. If &#39;index &gt;= numElementDefinitions()&#39; an
+        // exception is thrown.
+
+    const ConstantList enumeration() const;
+        // Return a &#39;ConstantList&#39; containing all possible values of the
+        // enumeration defined by this type. The behavior of this function is
+        // undefined unless &#39;isEnumerationType() == true&#39;.
+
+    void *userData() const;
+        // Return the user data associated with this &#39;SchemaTypeDefinition&#39;. If
+        // no user data has been associated with this &#39;SchemaTypeDefinition&#39;
+        // then return 0. Clients are responsible for synchronizing calls to
+        // this function with calls to &#39;setUserData(void*)&#39; made on not only
+        // this &#39;SchemaTypeDefinition&#39;, but also all copies of this
+        // &#39;SchemaTypeDefinition&#39;. Note that &#39;SchemaTypeDefinition&#39; objects
+        // have reference semantics: this function will reflect the last value
+        // set on *any* copy of this &#39;SchemaTypeDefinition&#39;.
+
+    std::ostream&amp; print(std::ostream&amp; stream,
+                        int level=0,
+                        int spacesPerLevel=4) const;
+        // Format this SchemaTypeDefinition to the specified output &#39;stream&#39; at
+        // the (absolute value of) the optionally specified indentation &#39;level&#39;
+        // and return a reference to &#39;stream&#39;. If &#39;level&#39; is specified,
+        // optionally specify &#39;spacesPerLevel&#39;, the number of spaces per
+        // indentation level for this and all of its nested objects. If &#39;level&#39;
+        // is negative, suppress indentation of the first line. If
+        // &#39;spacesPerLevel&#39; is negative, format the entire output on one line,
+        // suppressing all but the initial indentation (as governed by
+        // &#39;level&#39;).
+};
+
+// FREE OPERATORS
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream,
+                         const SchemaTypeDefinition&amp; typeDef);
+    // Write the value of the specified &#39;typeDef&#39; object to the specified
+    // output &#39;stream&#39; in a single-line format, and return a reference to
+    // &#39;stream&#39;.  If &#39;stream&#39; is not valid on entry, this operation has no
+    // effect.  Note that this human-readable format is not fully specified,
+    // can change without notice, and is logically equivalent to:
+    //..
+    //  print(stream, 0, -1);
+    //..
+
+// ============================================================================
+//                      INLINE FUNCTION DEFINITIONS
+// ============================================================================
+
+                       // -----------------------------
+                       // class SchemaElementDefinition
+                       // -----------------------------
+
+inline
+SchemaElementDefinition::SchemaElementDefinition(
+    blpapi_SchemaElementDefinition_t *handle)
+: d_impl_p(handle)
+{
+}
+
+
+inline
+SchemaElementDefinition::~SchemaElementDefinition()
+{
+}
+
+inline
+Name SchemaElementDefinition::name() const
+{
+    return Name(blpapi_SchemaElementDefinition_name(d_impl_p));
+}
+
+inline
+const char *SchemaElementDefinition::description() const
+{
+    return blpapi_SchemaElementDefinition_description(d_impl_p);
+}
+
+inline
+int SchemaElementDefinition::status() const
+{
+    return blpapi_SchemaElementDefinition_status(d_impl_p);
+}
+
+inline
+const SchemaTypeDefinition SchemaElementDefinition::typeDefinition() const
+{
+    return blpapi_SchemaElementDefinition_type(d_impl_p);
+}
+
+inline
+size_t SchemaElementDefinition::minValues() const
+{
+    return blpapi_SchemaElementDefinition_minValues(d_impl_p);
+}
+
+inline
+size_t SchemaElementDefinition::maxValues() const
+{
+    return blpapi_SchemaElementDefinition_maxValues(d_impl_p);
+}
+
+inline
+size_t SchemaElementDefinition::numAlternateNames() const
+{
+    return blpapi_SchemaElementDefinition_numAlternateNames(d_impl_p);
+}
+
+inline
+Name SchemaElementDefinition::getAlternateName(size_t index) const
+{
+    blpapi_Name_t *name =
+        blpapi_SchemaElementDefinition_getAlternateName(d_impl_p, index);
+    if (name == 0) {
+        ExceptionUtil::throwOnError(BLPAPI_ERROR_INDEX_OUT_OF_RANGE);
+    }
+    return name;
+}
+
+inline
+std::ostream&amp; SchemaElementDefinition::print(
+        std::ostream&amp; stream,
+        int level,
+        int spacesPerLevel) const
+{
+    blpapi_SchemaElementDefinition_print(
+            d_impl_p, OstreamWriter,  &amp;stream, level, spacesPerLevel);
+    return stream;
+}
+
+inline
+std::ostream&amp; operator&lt;&lt;(
+        std::ostream&amp; stream,
+        const SchemaElementDefinition&amp; element)
+{
+    element.print(stream, 0, -1);
+    return stream;
+}
+
+inline
+void SchemaElementDefinition::setUserData(void *userData)
+{
+    blpapi_SchemaElementDefinition_setUserData(d_impl_p, userData);
+}
+
+inline
+void *SchemaElementDefinition::userData() const
+{
+    return blpapi_SchemaElementDefinition_userData(d_impl_p);
+}
+
+inline
+blpapi_SchemaElementDefinition_t *SchemaElementDefinition::impl() const
+{
+    return d_impl_p;
+}
+                       // --------------------------
+                       // class SchemaTypeDefinition
+                       // --------------------------
+
+inline
+SchemaTypeDefinition::SchemaTypeDefinition(
+                                         blpapi_SchemaTypeDefinition_t *handle)
+: d_impl_p(handle)
+{
+}
+
+inline
+SchemaTypeDefinition::~SchemaTypeDefinition()
+{
+}
+
+inline
+int SchemaTypeDefinition::datatype() const
+{
+    return blpapi_SchemaTypeDefinition_datatype(d_impl_p);
+}
+
+inline
+Name SchemaTypeDefinition::name() const
+{
+    return blpapi_SchemaTypeDefinition_name(d_impl_p);
+}
+
+inline
+const char *SchemaTypeDefinition::description() const
+{
+    return blpapi_SchemaTypeDefinition_description(d_impl_p);
+}
+
+inline
+int SchemaTypeDefinition::status() const
+{
+    return blpapi_SchemaTypeDefinition_status(d_impl_p);
+}
+
+inline
+size_t SchemaTypeDefinition::numElementDefinitions() const
+{
+    return blpapi_SchemaTypeDefinition_numElementDefinitions(d_impl_p);
+}
+
+inline
+bool SchemaTypeDefinition::hasElementDefinition(const Name&amp; name) const
+{
+    return blpapi_SchemaTypeDefinition_getElementDefinition(
+            d_impl_p, 0, name.impl()) ? true : false;
+}
+
+inline
+bool
+SchemaTypeDefinition::hasElementDefinition(const char *nameString) const
+{
+    return blpapi_SchemaTypeDefinition_getElementDefinition(
+            d_impl_p, nameString, 0) ? true : false;
+}
+
+inline
+SchemaElementDefinition
+SchemaTypeDefinition::getElementDefinition(const Name&amp; name) const
+{
+    blpapi_SchemaElementDefinition_t *def =
+        blpapi_SchemaTypeDefinition_getElementDefinition(d_impl_p,
+                                                         0,
+                                                         name.impl());
+    if (def == 0) {
+        ExceptionUtil::throwOnError(BLPAPI_ERROR_ITEM_NOT_FOUND);
+    }
+    return def;
+}
+
+inline
+SchemaElementDefinition
+SchemaTypeDefinition::getElementDefinition(const char *nameString) const
+{
+    blpapi_SchemaElementDefinition_t *def =
+        blpapi_SchemaTypeDefinition_getElementDefinition(d_impl_p,
+                                                         nameString,
+                                                         0);
+    if (def == 0) {
+        ExceptionUtil::throwOnError(BLPAPI_ERROR_ITEM_NOT_FOUND);
+    }
+    return def;
+}
+
+inline
+SchemaElementDefinition
+SchemaTypeDefinition::getElementDefinition(size_t index) const
+{
+    blpapi_SchemaElementDefinition_t *def =
+        blpapi_SchemaTypeDefinition_getElementDefinitionAt(d_impl_p, index);
+    if (def == 0) {
+        ExceptionUtil::throwOnError(BLPAPI_ERROR_INDEX_OUT_OF_RANGE);
+    }
+    return def;
+}
+
+inline
+bool SchemaTypeDefinition::isComplexType() const
+{
+    return blpapi_SchemaTypeDefinition_isComplexType(d_impl_p) ? true : false;
+}
+
+inline
+bool SchemaTypeDefinition::isSimpleType() const
+{
+    return blpapi_SchemaTypeDefinition_isSimpleType(d_impl_p) ? true : false;
+}
+
+inline
+bool SchemaTypeDefinition::isEnumerationType() const
+{
+    return blpapi_SchemaTypeDefinition_isEnumerationType(d_impl_p)
+        ? true
+        : false;
+}
+
+inline
+std::ostream&amp; SchemaTypeDefinition::print(
+        std::ostream&amp; stream,
+        int level,
+        int spacesPerLevel) const
+{
+    blpapi_SchemaTypeDefinition_print(
+            d_impl_p, OstreamWriter,  &amp;stream, level, spacesPerLevel);
+    return stream;
+}
+
+inline
+std::ostream&amp; operator&lt;&lt;(
+        std::ostream&amp; stream,
+        const SchemaTypeDefinition&amp; typeDef)
+{
+    typeDef.print(stream, 0, -1);
+    return stream;
+}
+
+inline
+void SchemaTypeDefinition::setUserData(void *userData)
+{
+    blpapi_SchemaTypeDefinition_setUserData(d_impl_p, userData);
+}
+
+inline
+void *SchemaTypeDefinition::userData() const
+{
+    return blpapi_SchemaTypeDefinition_userData(d_impl_p);
+}
+
+inline
+const ConstantList SchemaTypeDefinition::enumeration() const
+{
+    return blpapi_SchemaTypeDefinition_enumeration(d_impl_p);
+}
+
+}  // close namespace blpapi
+}  // close namespace BloombergLP
+
+#endif // #ifdef __cplusplus
+
+#endif // #ifndef INCLUDED_BLPAPI_SCHEMA
+</pre>
+</body>
+</html>

@@ -1,14 +1,50 @@
-import re, requests, json, urllib2, wikipedia, praw
+# Standard Lib
+import re, requests, json, urllib2, wikipedia, praw, sys, urllib
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+# NYTimes, Beautifulsoup, and Cookies
 from nytimesarticle import articleAPI
 from bs4 import BeautifulSoup
 from cookielib import CookieJar
+
+# Flask
 from flask import Flask, jsonify, render_template, url_for
+
+# Scikit-learn
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.cluster import KMeans
 
+# DocumentDB
+import pydocumentdb.documents as documents
+import pydocumentdb.document_client as document_client
+import pydocumentdb.errors as errors
+
+# Bloomberg
+import blpapi
+sessionOptions = blpapi.SessionOptions()
+sessionOptions.setServerHost("10.8.8.1")
+sessionOptions.setServerPort(8194)
+session = blpapi.Session(sessionOptions)
+
+# NLTK
+import nltk
+
+# Analyze
+from analyze import callTweet
+
+# Initialization of Flask
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 NYTimes_API_KEY = 'ca470e1e91b15a82cc0d4350b08a3c0b:14:70189328'
 
+# DocumentDB
+DocumentDBHost = 'https://context.documents.azure.com:443/'
+DocumentDBMasterKey = 'HnmYu5yI0lqevYzY+nu6ATn7VLCLJZYL047VUW1UMt9jDKYSqJP5FvYmijtKFnhJ25aPo8T8e1ExUCWOvW7ULQ=='
+client = document_client.DocumentClient(DocumentDBHost, {'masterKey': DocumentDBMasterKey})
+databases = client.ReadDatabases()
+
+# Clustering algorithm
 def cluster_articles(reference_article, articles):
 	v = DictVectorizer(sparse=False)
 	dataset = []
@@ -19,7 +55,7 @@ def cluster_articles(reference_article, articles):
 
 	for key in reference_keys:
 		ref_keywords[key["value"]] = 1
-    dataset.append(ref_keywords)
+	dataset.append(ref_keywords)
 
 	for article in articles:
 		keywords = {}
@@ -52,6 +88,52 @@ def cluster_articles(reference_article, articles):
 
 	return related_articles_urls
 
+def bloombergSentimentLocation(security1):
+    # Start a Session
+    if not session.start():
+        print "Failed to start session."
+        return
+    try:
+        # Open service to get historical data from
+        if not session.openService("//blp/refdata"):
+            print "Failed to open //blp/refdata"
+            return
+        # Obtain previously opened service
+        refDataService = session.getService("//blp/refdata")
+
+        # Create and fill the request for the historical data
+        request = refDataService.createRequest("HistoricalDataRequest")
+        request.getElement("securities").appendValue(security1)
+        request.getElement("fields").appendValue("PX_LAST")
+        request.getElement("fields").appendValue("OPEN")
+        request.set("periodicityAdjustment", "ACTUAL")
+        request.set("periodicitySelection", "MONTHLY")
+        request.set("startDate", "20140301")
+        request.set("endDate", "20141114")
+        request.set("maxDataPoints", 100)
+
+        # Send the request
+        session.sendRequest(request)
+
+        allMessages = []
+        # Process received events
+        while(True):
+            # We provide timeout to give the chance for Ctrl+C handling:
+            ev = session.nextEvent(500)
+            for msg in ev:
+                allMessages.append(msg)
+            if ev.eventType() == blpapi.Event.RESPONSE:
+                # Response completly received, so we could exit
+                return allMessages
+    finally:
+        # Stop the session
+        session.stop()
+
+# AlchemyAPI
+def twitterSentimentAnalysis(title):
+	print callTweet(urllib.pathname2url(title), 150)
+
+# GetArticle from the URL, and return JSON
 def getArticle(url):
 	# Beautiful Soup scraping for Article
 	s = requests.Session()
@@ -67,13 +149,17 @@ def getArticle(url):
 	currentArticle = articles['response']['docs'][0]
 
 	# Article text Engine
+	nltkText = ''
 	allText = ''
 	for eachSelection in p:
+		nltkText += (eachSelection.getText() + ' ')
 		allText += (eachSelection.getText() + '<br><br>')
+
 	allImages = []
 	for eachImage in img:
 		allImages.append(eachImage['src'])
 	currentArticle['allText'] = allText	
+	currentArticle['nltk'] = nltkText
 	currentArticle['img'] = allImages
 
 	# Definition Engine
@@ -83,8 +169,6 @@ def getArticle(url):
 		currentArticle['keywords'][eachKeyword]['definition'] = currentDefinition
 
 	return currentArticle
-
-print cluster_articles(getArticle('http://www.nytimes.com/2014/11/14/world/middleeast/abu-bakr-baghdadi-islamic-state-leader-calls-for-new-fight-against-west.html'), [getArticle('http://www.nytimes.com/2014/11/15/sports/not-all-leagues-ready-to-go-all-in-on-legalized-gambling.html'), getArticle('http://www.nytimes.com/2014/11/15/business/some-retailers-are-promoting-their-decision-to-remain-closed-on-thanksgiving.html?hp&action=click&pgtype=Homepage&module=photo-spot-region&region=top-news&WT.nav=top-news'), getArticle('http://www.nytimes.com/2014/11/14/world/middleeast/abu-bakr-baghdadi-islamic-state-leader-calls-for-new-fight-against-west.html')])
 
 # Primary route
 @app.route("/")

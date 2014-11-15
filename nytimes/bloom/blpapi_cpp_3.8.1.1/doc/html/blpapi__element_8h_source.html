@@ -1,0 +1,2020 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+<html>
+<title>BLPAPI C++</title>
+<html>
+<pre>
+/* Copyright 2012. Bloomberg Finance L.P.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:  The above
+ * copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+// blpapi_element.h                                                   -*-C++-*-
+#ifndef INCLUDED_BLPAPI_ELEMENT
+#define INCLUDED_BLPAPI_ELEMENT
+
+//@PURPOSE: Provide a representation of an item in a message.
+//
+//@CLASSES:
+// blpapi::Element: Represents an item in a message
+//
+//@DESCRIPTION: This component implements a representation of an item in a
+// &#39;Message&#39;.
+
+#ifndef INCLUDED_BLPAPI_CALL
+#include &lt;blpapi_call.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_TYPES
+#include &lt;blpapi_types.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_SCHEMA
+#include &lt;blpapi_schema.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_DATETIME
+#include &lt;blpapi_datetime.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_NAME
+#include &lt;blpapi_name.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_DEFS
+#include &lt;blpapi_defs.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_STREAMPROXY
+#include &lt;blpapi_streamproxy.h&gt;
+#endif
+
+#include &lt;stddef.h&gt;
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+BLPAPI_EXPORT blpapi_Name_t*
+blpapi_Element_name(const blpapi_Element_t *element);
+
+BLPAPI_EXPORT const char*
+blpapi_Element_nameString(const blpapi_Element_t *element);
+
+BLPAPI_EXPORT blpapi_SchemaElementDefinition_t*
+blpapi_Element_definition(const blpapi_Element_t* element);
+
+BLPAPI_EXPORT int blpapi_Element_datatype (
+        const blpapi_Element_t* element);
+
+BLPAPI_EXPORT int blpapi_Element_isComplexType(
+        const blpapi_Element_t* element);
+
+BLPAPI_EXPORT int blpapi_Element_isArray(
+        const blpapi_Element_t* element);
+
+BLPAPI_EXPORT int blpapi_Element_isReadOnly(
+        const blpapi_Element_t* element);
+
+BLPAPI_EXPORT size_t blpapi_Element_numValues(
+        const blpapi_Element_t* element);
+
+BLPAPI_EXPORT size_t blpapi_Element_numElements(
+        const blpapi_Element_t* element);
+
+BLPAPI_EXPORT int blpapi_Element_isNullValue(
+        const blpapi_Element_t* element,
+        size_t position);
+
+BLPAPI_EXPORT int blpapi_Element_isNull(
+        const blpapi_Element_t* element);
+
+
+BLPAPI_EXPORT int blpapi_Element_print(
+        const blpapi_Element_t* element,
+        blpapi_StreamWriter_t streamWriter,
+        void *stream,
+        int level,
+        int spacesPerLevel);
+
+BLPAPI_EXPORT
+int blpapi_Element_getElementAt(
+        const blpapi_Element_t* element,
+        blpapi_Element_t **result,
+        size_t position);
+
+BLPAPI_EXPORT
+int blpapi_Element_getElement(
+        const blpapi_Element_t *element,
+        blpapi_Element_t **result,
+        const char* nameString,
+        const blpapi_Name_t *name);
+
+BLPAPI_EXPORT
+int blpapi_Element_hasElement(
+        const blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t *name);
+
+BLPAPI_EXPORT
+int blpapi_Element_hasElementEx(
+        const blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t *name,
+        int excludeNullElements,
+        int reserved);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsBool(
+        const blpapi_Element_t *element,
+        blpapi_Bool_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsChar(
+        const blpapi_Element_t *element,
+        blpapi_Char_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsInt32(
+        const blpapi_Element_t *element,
+        blpapi_Int32_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsInt64(
+        const blpapi_Element_t *element,
+        blpapi_Int64_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsFloat32(
+        const blpapi_Element_t *element,
+        blpapi_Float32_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsFloat64(
+        const blpapi_Element_t *element,
+        blpapi_Float64_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsString(
+        const blpapi_Element_t *element,
+        const char **buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsDatetime(
+        const blpapi_Element_t *element,
+        blpapi_Datetime_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsHighPrecisionDatetime(
+        const blpapi_Element_t *element,
+        blpapi_HighPrecisionDatetime_t *buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsElement(
+        const blpapi_Element_t *element,
+        blpapi_Element_t **buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getValueAsName(
+        const blpapi_Element_t *element,
+        blpapi_Name_t **buffer,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_getChoice(
+        const blpapi_Element_t *element,
+        blpapi_Element_t **result);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueBool(
+        blpapi_Element_t *element,
+        blpapi_Bool_t value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueChar(
+        blpapi_Element_t *element,
+        blpapi_Char_t value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueInt32(
+        blpapi_Element_t *element,
+        blpapi_Int32_t value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueInt64(
+        blpapi_Element_t *element,
+        blpapi_Int64_t value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueFloat32(
+        blpapi_Element_t *element,
+        blpapi_Float32_t value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueFloat64(
+        blpapi_Element_t *element,
+        blpapi_Float64_t value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueString(
+        blpapi_Element_t *element,
+        const char *value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueDatetime(
+        blpapi_Element_t *element,
+        const blpapi_Datetime_t *value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueHighPrecisionDatetime(
+        blpapi_Element_t *element,
+        const blpapi_HighPrecisionDatetime_t *value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueFromElement(
+        blpapi_Element_t *element,
+        blpapi_Element_t *value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setValueFromName (
+        blpapi_Element_t *element,
+        const blpapi_Name_t *value,
+        size_t index);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementBool(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Bool_t value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementChar(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Char_t value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementInt32(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Int32_t value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementInt64(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Int64_t value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementFloat32(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Float32_t value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementFloat64(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Float64_t value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementString(
+        blpapi_Element_t *element,
+        const char *nameString,
+        const blpapi_Name_t* name,
+        const char *value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementDatetime(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        const blpapi_Datetime_t *value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementHighPrecisionDatetime(
+        blpapi_Element_t *element,
+        const char *nameString,
+        const blpapi_Name_t *name,
+        const blpapi_HighPrecisionDatetime_t *value);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementFromField(
+        blpapi_Element_t *element,
+        const char* nameString,
+        const blpapi_Name_t* name,
+        blpapi_Element_t *sourcebuffer);
+
+BLPAPI_EXPORT
+int blpapi_Element_setElementFromName (
+        blpapi_Element_t *element,
+        const char* elementName,
+        const blpapi_Name_t* name,
+        const blpapi_Name_t *buffer);
+
+BLPAPI_EXPORT
+int blpapi_Element_appendElement (
+        blpapi_Element_t *element,
+        blpapi_Element_t **appendedElement);
+
+BLPAPI_EXPORT
+int blpapi_Element_setChoice (
+        blpapi_Element_t *element,
+        blpapi_Element_t **resultElement,
+        const char* nameCstr,
+        const blpapi_Name_t* name,
+        size_t index);
+
+#ifdef __cplusplus
+}
+
+#ifndef INCLUDED_BLPAPI_EXCEPTION
+#include &lt;blpapi_exception.h&gt;
+#endif
+
+#ifndef INCLUDED_STRING
+#include &lt;string&gt;
+#define INCLUDED_STRING
+#endif
+
+namespace BloombergLP {
+namespace blpapi {
+                         // =============
+                         // class Element
+                         // =============
+
+class Element {
+    // Element represents an item in a message.
+    //
+    // An Element can represent: a single value of any data type supported by
+    // the Bloomberg API; an array of values; a sequence or a choice.
+    //
+    // The value(s) in an Element can be queried in a number of ways. For an
+    // Element which represents a single value or an array of values use the
+    // getValueAs() functions or getValueAsBool() etc. For an Element which
+    // represents a sequence or choice use getElementAsBool() etc. In addition,
+    // for choices and sequences, hasElement() and getElement() are useful.
+    //
+    // This example shows how to access the value of a scalar element &#39;s&#39; as a
+    // floating point number:
+    //..
+    //      float f = s.getValueAsFloat32();
+    //..
+    // Similarly, this example shows how to retrieve the third value in an
+    // array element &#39;a&#39;, as a floating pointer number:
+    //..
+    //      float f = a.getValueAsFloat32(2);
+    //..
+    // Use numValues() to determine the number of values available. For single
+    // values, it will return either 0 or 1. For arrays it will return the
+    // actual number of values in the array.
+    //
+    // To retrieve values from a complex element types (sequences and choices)
+    // use the getElementAs...() family of methods. This example shows how to
+    // get the value of the element &#39;city&#39; in the sequence element &#39;address&#39;:
+    //..
+    //      const char* city = address.getElementAsString(&quot;city&quot;);
+    //..
+    // The value(s) of an Element can be set in a number of ways. For an
+    // Element which represents a single value or an array of values use the
+    // setValue() or appendValue() functions. For an element which represents a
+    // sequence or a choice use the setElement() functions.
+    //
+    // This example shows how to set the value of an Element &#39;s&#39; from an
+    // integer:
+    //..
+    //      Int32 value=5;
+    //      s.setValue(value);
+    //..
+    // This example shows how to append an integer a value to an array element
+    // &#39;a&#39;:
+    //..
+    //      Int32 value=5;
+    //      s.appendValue(value);
+    //..
+    // To set values in a complex element (a sequence or a choice) use the
+    // setElement() family of functions. This example shows how to set the
+    // value of the element &#39;city&#39; in the sequence element &#39;address&#39; to a
+    // string.
+    //..
+    //      Element address;
+    //      ...
+    //      address.setElement(&quot;city&quot;, &quot;New York&quot;);
+    //..
+    // Methods which specify a Element name come in two forms. One which takes
+    // a Name as a parameter and one which takes a const char*.  The form which
+    // takes Name is more efficient. However, it requires the Name to have been
+    // created in the global name table.
+    //
+    // The form which takes a const char* is less efficient but will not cause
+    // a new Name to be created in the global Name table. Because all valid
+    // Element names will have already been placed in the global name table by
+    // the API if the supplied string cannot be found in the global name table
+    // the appropriate error or exception can be returned.
+    //
+    // The API will convert data types as long as there is no loss of precision
+    // involved. So:
+    //
+    // - A BOOL can be returned as bool, char, Int32, Int64, Float32, Float64,
+    // std::string (the string will be &quot;true&quot; or &quot;false&quot;)
+    //
+    // - A BOOL can be set from bool, std::string (if it has a value of &quot;y&quot;,
+    // &quot;n&quot;, &quot;yes&quot;, &quot;no&quot;, &quot;true&quot; or &quot;false&quot;)
+    //
+    // - A CHAR can be returned as char, Int32, Int64, Float32, Float64,
+    // std::string
+    //
+    // - A CHAR can be set from char
+    //
+    // - An INT32 can be returned as Int32, Int64, Float64, std::string
+    //
+    // - An INT32 can be set from char, Int32
+    //
+    // - An INT64 can be returned as Int64, std::string
+    //
+    // - An INT64 can be set from char, Int32, Int64
+    //
+    // - A FLOAT32 can be returned as Float32, Float64, std::string
+    //
+    // - A FLOAT32 can be set from char
+    //
+    // - A FLOAT64 can be returned as Float64, std::string
+    //
+    // - A FLOAT64 can be set from char, Int32, Float32
+    //
+    // - A STRING can be returned as std::string, Name
+    //
+    // - A STRING can be set from bool (the string will be set to
+    // &quot;true&quot; or &quot;false&quot;), char, Int32, Int64, Float32, Float64, Name
+    //
+    // - A DATETIME can be returned as Datetime
+    //
+    // - A DATETIME can be set from Datetime
+
+    blpapi_Element_t *d_handle_p;
+
+  public:
+
+    Element();
+        // Create an uninitialized Element. The only valid operations to
+        // perform on an unitialized Element are assignment, isValid() and
+        // destruction.
+
+    Element(blpapi_Element_t *element);
+
+    // MANIPULATORS
+
+    void rebind(blpapi_Element_t *element);
+
+    void setElement(const char* name, bool value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, char value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, Int32 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, Int64 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, Float32 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, Float64 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, const Datetime&amp; value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, const char* value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const char* name, const Name&amp; value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    void setElement(const Name&amp; name, bool value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, char value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, Int32 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, Int64 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, Float32 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, Float64 value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, const Datetime&amp; value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, const char* value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setElement(const Name&amp; name, const Name&amp; value);
+        // Set the specified element &#39;name&#39; within this sequence or choice
+        // Element to the specified &#39;value&#39;. An exception is thrown if the
+        // specified &#39;name&#39; is not valid for this Element, or if the Element
+        // identified by the specified &#39;name&#39; cannot be initialized from the
+        // type of the specified &#39;value&#39;. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    void setValue(bool value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(char value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(Int32 value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(Int64 value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(Float32 value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(Float64 value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(const Datetime&amp; value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(const char* value, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void setValue(const Name&amp; valueName, size_t index=0);
+        // Set the value of the specified &#39;index&#39;th entry in this Element to
+        // the specified &#39;value&#39;. An exception is thrown if this Element&#39;s
+        // DataType means it cannot be initialized from an instance of the
+        // supplied &#39;value&#39;. An exception is thrown if &#39;index &gt;= numValues()&#39;.
+
+    void appendValue(bool value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(char value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(Int32 value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(Int64 value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(Float32 value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(Float64 value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(const Datetime&amp; value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(const char* value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    void appendValue(const Name&amp; value);
+        // Appends the specified &#39;value&#39; to this Element as the last element.
+        // An exception is thrown if this Element&#39;s DataType means it cannot be
+        // initialized from an instance of the supplied &#39;value&#39;, or if the
+        // current size of this Element (&#39;numValues()&#39;) is equal to the maximum
+        // defined by &#39;elementDefinition().maxValues()&#39;.
+
+    Element appendElement();
+        // If this Element is an array of sequence or choice Elements, then
+        // append an element to this element and return the appended element;
+        // otherwise an exception is thrown.
+
+    Element setChoice(const char* selectionName);
+        // If &#39;datatype() == DataType::CHOICE&#39; and the specified
+        // &#39;selectionName&#39; is valid for this Element, then set the active
+        // Element to the one specified by &#39;selectionName&#39; and return it;
+        // otherwise an exception is thrown.
+
+    Element setChoice(const Name&amp; selectionName);
+        // If &#39;datatype() == DataType::CHOICE&#39; and the specified
+        // &#39;selectionName&#39; is value for this Element, then set the active
+        // Element to the one specified by &#39;selectionName&#39; and return it;
+        // otherwise an exception is thrown.
+
+    blpapi_Element_t* handle();
+
+    // ACCESSORS
+
+    Name name() const;
+        // If this Element is part of a sequence or choice Element then return
+        // the Name of this Element within the sequence or choice Element that
+        // owns it. If this Element is not part of a sequence Element (that is
+        // it is an entire Request or Message) then return the Name of the
+        // Request or Message.
+
+    int datatype() const;
+        // Return the basic data type used to represent a value in this
+        // element. The possible return values are enumerated in
+        // &#39;blpapi_datatype&#39;.
+
+    bool isComplexType() const;
+        // Return true if &#39;datatype() == DataType::SEQUENCE&#39; or
+        // &#39;datatype() == DataType::CHOICE&#39; and false otherwise.
+
+    bool isArray() const;
+        // Return true if &#39;elementDefinition().maxValues() &gt; 1&#39; or
+        // &#39;elementDefinition().maxValues() == UNBOUNDED&#39;, and false otherwise.
+
+    bool isNull() const;
+        // Return true if this element has a null value, and false otherwise.
+
+    bool isReadOnly() const;
+        // Return true if this element cannot be modified, and false otherwise.
+
+    SchemaElementDefinition elementDefinition() const;
+        // Return a reference to the read-only element definition object that
+        // defines the properties of this elements value.
+
+    size_t numValues() const;
+        // Return the number of values contained by this element. The number of
+        // values is 0 if &#39;isNull()&#39; returns true, and no greater than 1 if
+        // &#39;isComplexType()&#39; returns true. The value returned will always be in
+        // the range defined by &#39;elementDefinition().minValues()&#39; and
+        // &#39;elementDefinition().maxValues()&#39;.
+
+    size_t numElements() const;
+        // Return the number of elements contained by this element.  The number
+        // of elements is 0 if &#39;isComplex()&#39; returns false, and no greater than
+        // 1 if the Datatype is CHOICE; if the DataType is SEQUENCE this may
+        // return any number (including 0).
+
+    bool isValid() const;
+        // Return true if this Element is valid. An Element created using the
+        // default constructor is not valid until it has had a value assigned
+        // to it.
+
+    bool isNullValue(size_t position = 0) const;
+        // Return true if the value of the sub-element at the specified
+        // &#39;position&#39; in a sequence or choice element is a null value. An
+        // exception is thrown if &#39;position &gt;= numElements()&#39;.
+
+    bool hasElement(const char* name, bool excludeNullElements = false) const;
+    bool hasElement(const Name&amp; name, bool excludeNullElements = false) const;
+        // Return true if this Element is a choice or sequence
+        // (&#39;isComplexType() == true&#39;) and it contains an Element with the
+        // specified &#39;name&#39;.
+
+    int getValueAs(bool* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(char* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Int32* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Int64* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Float32* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Float64* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Datetime* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;. Note that this function will
+        // not necessarily set all fields of &#39;*result&#39; -- callers should check
+        // &#39;result-&gt;hasParts(...)&#39; or &#39;result-&gt;parts()&#39; before accessing the
+        // fields of &#39;result&#39;.
+
+    int getValueAs(std::string* result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Element *result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    int getValueAs(Name *result, size_t index=0) const;
+        // Set the specified &#39;result&#39; to the value of the specified &#39;index&#39;th
+        // entry in this Element and return 0. An error (non-zero) is returned
+        // if the DataType of this Element cannot be converted to the type of
+        // &#39;result&#39; or if &#39;numValues() &lt;= index&#39;.
+
+    bool getValueAsBool(size_t index=0) const;
+        // Return the specified &#39;index&#39;th entry in the Element as a bool. An
+        // exception is thrown if the DataType of this Element cannot be
+        // converted to bool or if &#39;numValues() &lt;= index&#39;.
+
+    char getValueAsChar(size_t index=0) const;
+        // Return the specified &#39;index&#39;th entry in the Element as a char. An
+        // exception is thrown if the DataType of this Element cannot be
+        // converted to char or if &#39;numValues() &lt;= index&#39;.
+
+    Int32 getValueAsInt32(size_t index=0) const;
+        // Return the specified &#39;index&#39;th entry in the Element as a Int32. An
+        // exception is thrown if the DataType of this Element cannot be
+        // converted to Int32 or if &#39;numValues() &lt;= index&#39;.
+
+    Int64 getValueAsInt64(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as a Int64. An
+        // exception is thrown if the DataType of this Element cannot be
+        // converted to Int64 or if &#39;numValues() &lt;= index&#39;.
+
+    Float32 getValueAsFloat32(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as a Float32.
+        // An exception is thrown if the DataType of this Element cannot be
+        // converted to Float32 or if &#39;numValues() &lt;= index&#39;.
+
+    Float64 getValueAsFloat64(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as a Float64.
+        // An exception is thrown if the DataType of this Element cannot be
+        // converted to Float64 or if &#39;numValues() &lt;= index&#39;.
+
+    Datetime getValueAsDatetime(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as a Datetime.
+        // An exception is thrown if the DataType of this Element cannot be
+        // converted to Datetime or if &#39;numValues() &lt;= index&#39;. Note that this
+        // function will not necessarily set all fields of the returned value
+        // -- callers should check &#39;rv.hasParts(...)&#39; or &#39;rv.parts()&#39; before
+        // accessing the fields of the returned value &#39;rv&#39;.
+
+    const char* getValueAsString(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as a pointer to
+        // a null-terminated string. An exception is thrown if the DataType of
+        // this Element cannot be converted to a null-terminated string or if
+        // &#39;numValues() &lt;= index&#39;. The pointer returned remains valid until
+        // this Element is destroyed.
+
+    Element getValueAsElement(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as an Element.
+        // An exception is thrown if the DataType of this Element cannot be
+        // converted to an Element or if &#39;numValues() &lt;= index&#39;.
+
+    Name getValueAsName(size_t index=0) const;
+        // Returns the specified &#39;index&#39;th entry in the Element as a Name. An
+        // exception is thrown if the DataType of this Element cannot be
+        // converted to Name or if &#39;numValues() &lt;= index&#39;.
+
+    int getElement(Element* result, const char *name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; then load that
+        // element into the specified &#39;result&#39; and return 0; otherwise, return
+        // an error (non-zero). The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    int getElement(Element* result, const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; then load that
+        // element into the specified &#39;result&#39; and return 0; otherwise, return
+        // an error (non-zero). The behavior of this function is undefined if
+        // &#39;name&#39; is uninitialized.
+
+    int getElement(Element *result, size_t position) const;
+        // If this Element is either a sequence or a choice and &#39;numElements()&#39;
+        // is greater than the specified &#39;position&#39;, then load the element at
+        // &#39;position&#39; into the specified &#39;result&#39; and return 0; otherwise
+        // return an error (non-zero).
+
+    Element getElement(size_t position) const;
+        // If this Element is either a sequence or a choice and &#39;numElements()&#39;
+        // is greater than the specified &#39;position&#39; return the &#39;position&#39;th
+        // element. Otherwise, an exception is thrown.
+
+    Element getElement(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39;, then return that
+        // Element. Otherwise, an exception is thrown. The behavior of this
+        // function is undefined if &#39;name&#39; is uninitialized.
+
+    Element getElement(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39;, then return that
+        // Element. Otherwise, an exception is thrown. The behavior of this
+        // function is undefined unless &#39;name&#39; is a valid null-terminated
+        // string.
+
+    bool getElementAsBool(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a bool then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    bool getElementAsBool(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a bool then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    char getElementAsChar(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a char then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    char getElementAsChar(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a char then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    Int32 getElementAsInt32(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as an Int32 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    Int32 getElementAsInt32(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as an Int32 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    Int64 getElementAsInt64(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as an Int64 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    Int64 getElementAsInt64(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as an Int64 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    Float32 getElementAsFloat32(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Float32 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    Float32 getElementAsFloat32(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Float32 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    Float64 getElementAsFloat64(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Float64 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    Float64 getElementAsFloat64(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Float64 then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    Datetime getElementAsDatetime(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Datetime then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string. Note this function
+        // will not necessarily set all fields of the returned value -- callers
+        // should check &#39;rv.hasParts(...)&#39; or &#39;rv.parts()&#39; before accessing the
+        // fields of the returned value &#39;rv&#39;.
+
+    Datetime getElementAsDatetime(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as Datetime then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized. Note that this function will not
+        // necessarily set all fields of the returned value -- callers should
+        // check &#39;rv.hasParts(...)&#39; or &#39;rv.parts()&#39; before accessing the fields
+        // of the returned value &#39;rv&#39;.
+
+    const char* getElementAsString(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a null-terminated string then a pointer to a string is
+        // returned. The pointer remains valid until this Element is destroyed.
+        // Otherwise an exception is thrown. The behavior of this function is
+        // undefined unless &#39;name&#39; is a valid null-terminated string.
+
+    const char* getElementAsString(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a null-terminated string then a pointer to a string is
+        // returned. The pointer remains valid until this Element is destroyed.
+        // Otherwise an exception is thrown. The behavior of this function is
+        // undefined if &#39;name&#39; is uninitialized.
+
+    Name getElementAsName(const char* name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Name then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // unless &#39;name&#39; is a valid null-terminated string.
+
+    Name getElementAsName(const Name&amp; name) const;
+        // If this Element is either a sequence or a choice and contains a
+        // valid Element identified by the specified &#39;name&#39; which can be
+        // returned as a Name then its value is returned. Otherwise an
+        // exception is thrown. The behavior of this function is undefined
+        // if &#39;name&#39; is uninitialized.
+
+    Element getChoice() const;
+        // Return the selection name of this element if this element is a
+        // &quot;choice&quot; element. Otherwise, an exception is thrown.
+
+    const blpapi_Element_t* handle() const;
+
+    std::ostream&amp; print(std::ostream&amp; stream,
+                        int           level=0,
+                        int           spacesPerLevel=4) const;
+        // Format this Element to the specified output &#39;stream&#39; at the
+        // (absolute value of) the optionally specified indentation &#39;level&#39; and
+        // return a reference to &#39;stream&#39;. If &#39;level&#39; is specified, optionally
+        // specify &#39;spacesPerLevel&#39;, the number of spaces per indentation level
+        // for this and all of its nested objects. If &#39;level&#39; is negative,
+        // suppress indentation of the first line. If &#39;spacesPerLevel&#39; is
+        // negative, format the entire output on one line, suppressing all but
+        // the initial indentation (as governed by &#39;level&#39;).
+};
+
+// FREE OPERATORS
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream, const Element &amp;element);
+    // Write the value of the specified &#39;element&#39; object to the specified
+    // output &#39;stream&#39; in a single-line format, and return a reference to
+    // &#39;stream&#39;.  If &#39;stream&#39; is not valid on entry, this operation has no
+    // effect.  Note that this human-readable format is not fully specified,
+    // can change without notice, and is logically equivalent to:
+    //..
+    //  print(stream, 0, -1);
+    //..
+
+// ============================================================================
+//                      INLINE AND TEMPLATE FUNCTION IMPLEMENTATIONS
+// ============================================================================
+
+                            // -------------
+                            // class Element
+                            // -------------
+
+inline
+Element::Element()
+: d_handle_p(0)
+{
+}
+
+inline
+Element::Element(blpapi_Element_t *handle)
+: d_handle_p(handle)
+{
+}
+
+inline
+void Element::rebind(blpapi_Element_t *element)
+{
+    d_handle_p = element;
+}
+
+
+inline
+void Element::setElement(const char* name, bool value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementBool(d_handle_p, name, 0 , value ? 1 :
+                0));
+}
+
+inline
+void Element::setElement(const char* name, char value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementChar(d_handle_p, name, 0 , value));
+}
+
+inline
+void Element::setElement(const char* name, Int32 value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementInt32(d_handle_p, name, 0 , value));
+}
+
+inline
+void Element::setElement(const char* name, Int64 value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementInt64(d_handle_p, name, 0 , value));
+}
+
+inline
+void Element::setElement(const char* name, Float32 value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setElementFloat32(d_handle_p, name, 0 , value));
+}
+
+inline
+void Element::setElement(const char* name, Float64 value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setElementFloat64(d_handle_p, name, 0 , value));
+}
+
+inline
+void Element::setElement(const char* name, const Datetime&amp; value)
+{
+    ExceptionUtil::throwOnError(
+        BLPAPI_CALL_ELEMENT_SETELEMENTHIGHPRECISIONDATETIME(
+                                                d_handle_p,
+                                                name,
+                                                0,
+                                                &amp;value.rawHighPrecisionValue())
+    );
+}
+
+inline
+void Element::setElement(const char* name, const char* value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementString(d_handle_p, name, 0 , value));
+}
+
+inline
+void Element::setElement(const char* name, const Name&amp; value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementFromName(d_handle_p,
+                                              name,
+                                              0,
+                                              value.impl()));
+}
+
+inline
+void Element::setElement(const Name&amp; name, bool value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementBool(d_handle_p,
+                                          0,
+                                          name.impl(),
+                                          value ? 1 : 0));
+}
+
+inline
+void Element::setElement(const Name&amp; name, char value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementChar(d_handle_p, 0, name.impl(), value));
+}
+
+inline
+void Element::setElement(const Name&amp; name, Int32 value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementInt32(d_handle_p, 0, name.impl(), value));
+}
+
+inline
+void Element::setElement(const Name&amp; name, Int64 value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementInt64(d_handle_p, 0, name.impl(), value));
+}
+
+inline
+void Element::setElement(const Name&amp; name, Float32 value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setElementFloat32(d_handle_p, 0, name.impl(), value));
+}
+
+inline
+void Element::setElement(const Name&amp; name, Float64 value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setElementFloat64(d_handle_p, 0, name.impl(), value));
+}
+
+inline
+void Element::setElement(const Name&amp; name, const Datetime&amp; value)
+{
+    ExceptionUtil::throwOnError(
+        BLPAPI_CALL_ELEMENT_SETELEMENTHIGHPRECISIONDATETIME(
+                                                d_handle_p,
+                                                0,
+                                                name.impl(),
+                                                &amp;value.rawHighPrecisionValue())
+    );
+}
+
+inline
+void Element::setElement(const Name&amp; name, const char* value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementString(d_handle_p,
+                                            0,
+                                            name.impl(),
+                                            value));
+}
+
+inline
+void Element::setElement(const Name&amp; name, const Name&amp; value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setElementFromName(d_handle_p,
+                                              0,
+                                              name.impl(),
+                                              value.impl()));
+}
+
+inline
+void Element::setValue(bool value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueBool(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(char value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueChar(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(Int32 value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueInt32(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(Int64 value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueInt64(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(Float32 value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueFloat32(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(Float64 value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueFloat64(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(const Datetime&amp; value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+        BLPAPI_CALL_ELEMENT_SETVALUEHIGHPRECISIONDATETIME(
+                                                d_handle_p,
+                                                &amp;value.rawHighPrecisionValue(),
+                                                index)
+    );
+}
+
+inline
+void Element::setValue(const char* value, size_t index)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueString(d_handle_p, value, index));
+}
+
+inline
+void Element::setValue(const Name&amp; valueName, size_t index)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueFromName(d_handle_p, valueName.impl(), index));
+}
+
+inline
+void Element::appendValue(bool value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueBool(d_handle_p,
+                                        value,
+                                        BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(char value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueChar(d_handle_p,
+                                        value,
+                                        BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(Int32 value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueInt32(d_handle_p,
+                                         value,
+                                         BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(Int64 value)
+{
+    ExceptionUtil::throwOnError(
+            blpapi_Element_setValueInt64(d_handle_p,
+                                         value,
+                                         BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(Float32 value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueFloat32(d_handle_p,
+                                       value,
+                                       BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(Float64 value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueFloat64(d_handle_p,
+                                       value,
+                                       BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(const Datetime&amp; value)
+{
+    ExceptionUtil::throwOnError(
+        BLPAPI_CALL_ELEMENT_SETVALUEHIGHPRECISIONDATETIME(
+                                                d_handle_p,
+                                                &amp;value.rawHighPrecisionValue(),
+                                                BLPAPI_ELEMENT_INDEX_END)
+    );
+}
+
+inline
+void Element::appendValue(const char* value)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueString(d_handle_p,
+                                      value,
+                                      BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+void Element::appendValue(const Name&amp; valueName)
+{
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setValueFromName(d_handle_p,
+                                        valueName.impl(),
+                                        BLPAPI_ELEMENT_INDEX_END));
+}
+
+inline
+Element Element::appendElement()
+{
+    blpapi_Element_t *appendedElement;
+    ExceptionUtil::throwOnError(
+        blpapi_Element_appendElement(d_handle_p, &amp;appendedElement));
+    return Element(appendedElement);
+}
+
+inline
+Element Element::setChoice(const char* selectionName)
+{
+    blpapi_Element_t *resultElement;
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setChoice(d_handle_p,
+                                 &amp;resultElement,
+                                 selectionName,
+                                 0,
+                                 0));
+    return Element(resultElement);
+}
+
+inline
+Element Element::setChoice(const Name&amp; selectionName)
+{
+    blpapi_Element_t *resultElement;
+    ExceptionUtil::throwOnError(
+        blpapi_Element_setChoice(d_handle_p,
+                                 &amp;resultElement,
+                                 0,
+                                 selectionName.impl(),
+                                 0));
+    return Element(resultElement);
+}
+
+inline
+blpapi_Element_t* Element::handle()
+{
+    return d_handle_p;
+}
+
+inline
+Name Element::name() const
+{
+    return blpapi_Element_name(d_handle_p);
+}
+
+inline
+int Element::getElement(Element* element, const char *nameString) const
+{
+    blpapi_Element_t *fldt;
+    int rc = blpapi_Element_getElement(d_handle_p, &amp;fldt, nameString, 0);
+    if (!rc) {
+        element-&gt;rebind(fldt);
+    }
+
+    return rc;
+}
+
+inline
+int Element::getElement(Element* element, const Name&amp; name) const
+{
+    blpapi_Element_t *fldt;
+    int rc = blpapi_Element_getElement(d_handle_p, &amp;fldt, 0, name.impl());
+    if (!rc) {
+        element-&gt;rebind(fldt);
+    }
+
+    return rc;
+}
+
+inline
+int Element::getElement(Element *element, size_t position) const
+{
+    blpapi_Element_t *fldt;
+    int rc = blpapi_Element_getElementAt(d_handle_p, &amp;fldt, position);
+    if (!rc) {
+        element-&gt;rebind(fldt);
+    }
+
+    return rc;
+}
+
+inline
+int Element::datatype() const
+{
+    return blpapi_Element_datatype(d_handle_p);
+}
+
+inline
+bool Element::isComplexType() const
+{
+    return blpapi_Element_isComplexType(d_handle_p) ? true : false;
+}
+
+inline
+bool Element::isArray() const
+{
+    return blpapi_Element_isArray(d_handle_p) ? true : false;
+}
+
+inline
+bool Element::isNull() const
+{
+    return blpapi_Element_isNull(d_handle_p) ? true : false;
+}
+
+inline
+bool Element::isReadOnly() const
+{
+    return blpapi_Element_isReadOnly(d_handle_p) ? true : false;
+}
+
+inline
+SchemaElementDefinition Element::elementDefinition() const
+{
+    return blpapi_Element_definition(d_handle_p);
+}
+
+inline
+size_t Element::numValues() const
+{
+    return blpapi_Element_numValues(d_handle_p);
+}
+
+inline
+size_t Element::numElements() const
+{
+    return blpapi_Element_numElements(d_handle_p);
+}
+
+inline
+bool Element::isValid() const
+{
+    return d_handle_p  ? true : false;
+}
+
+inline
+bool Element::isNullValue(size_t position) const
+{
+    int rc = blpapi_Element_isNullValue(d_handle_p, position);
+    if (rc != 0 &amp;&amp; rc != 1) {
+        ExceptionUtil::throwOnError(rc);
+    }
+    return rc ? true : false;
+}
+
+inline
+bool Element::hasElement(const char* nameString,
+                                bool excludeNullElements) const
+{
+    if (excludeNullElements) {
+        return (blpapi_Element_hasElementEx(d_handle_p,
+              nameString, 0, excludeNullElements, 0) ? true : false);
+    }
+    return blpapi_Element_hasElement(d_handle_p, nameString, 0) ? true : false;
+}
+
+inline
+bool Element::hasElement(const Name&amp; name,
+                                bool excludeNullElements) const
+{
+    if (excludeNullElements) {
+        return (blpapi_Element_hasElementEx(d_handle_p, 0,
+                name.impl(), excludeNullElements, 0) ? true : false);
+    }
+    return blpapi_Element_hasElement(d_handle_p, 0, name.impl())
+                                     ? true
+                                     : false;
+}
+
+inline
+Element Element::getElement(const Name&amp; name) const
+{
+    blpapi_Element_t *fldt;
+    ExceptionUtil::throwOnError(
+                blpapi_Element_getElement(
+                    d_handle_p,
+                    &amp;fldt,
+                    0,
+                    name.impl()));
+    return Element(fldt);
+}
+
+inline
+Element Element::getElement(const char* name) const
+{
+    blpapi_Element_t *fldt;
+    ExceptionUtil::throwOnError(
+            blpapi_Element_getElement(
+                d_handle_p,
+                &amp;fldt,
+                name,
+                0));
+    return Element(fldt);
+}
+
+inline
+Element Element::getElement(size_t position) const
+{
+    blpapi_Element_t *element;
+    ExceptionUtil::throwOnError(
+            blpapi_Element_getElementAt(
+                d_handle_p,
+                &amp;element,
+                position));
+    return Element(element);
+}
+
+inline
+int Element::getValueAs(bool* buffer, size_t index) const
+{
+    blpapi_Bool_t tmp=false;
+
+    int res = blpapi_Element_getValueAsBool(d_handle_p, &amp;tmp, index);
+    *buffer = tmp ? true : false;
+    return res;
+}
+
+inline
+int Element::getValueAs(char* buffer, size_t index) const
+{
+    return blpapi_Element_getValueAsChar(d_handle_p, buffer, index);
+}
+
+inline
+int Element::getValueAs(Int32* buffer, size_t index) const
+{
+    return blpapi_Element_getValueAsInt32(d_handle_p, buffer, index);
+}
+
+inline
+int Element::getValueAs(Int64* buffer, size_t index) const
+{
+    return blpapi_Element_getValueAsInt64(d_handle_p,buffer, index);
+}
+
+inline
+int Element::getValueAs(Float32* buffer, size_t index) const
+{
+    return blpapi_Element_getValueAsFloat32(d_handle_p,buffer, index);
+}
+
+inline
+int Element::getValueAs(Float64* buffer, size_t index) const
+{
+    return blpapi_Element_getValueAsFloat64(d_handle_p,buffer, index);
+}
+
+inline
+int Element::getValueAs(Datetime* buffer, size_t index) const
+{
+    BLPAPI_CALL_ELEMENT_GETVALUEASHIGHPRECISIONDATETIME(d_handle_p,
+                                                        buffer,
+                                                        index);
+}
+
+inline
+int Element::getValueAs(std::string* result, size_t index) const
+{
+    const char* buffer;
+    int rc = blpapi_Element_getValueAsString(d_handle_p,&amp;buffer, index);
+    if (!rc) {
+        *result = buffer;
+    }
+    return rc;
+}
+
+inline
+int Element::getValueAs(Element *buffer, size_t index) const
+{
+    return blpapi_Element_getValueAsElement(
+            d_handle_p,
+            &amp;buffer-&gt;d_handle_p,
+            index);
+}
+
+inline
+int Element::getValueAs(Name *buffer, size_t index) const
+{
+    blpapi_Name_t* tmpName;
+    int res = blpapi_Element_getValueAsName(d_handle_p,
+                                            &amp;tmpName,
+                                            index);
+    if (!res) {
+        *buffer = Name(tmpName);
+    }
+    return res;
+}
+
+inline
+bool Element::getValueAsBool(size_t index) const
+{
+    bool value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+char Element::getValueAsChar(size_t index) const
+{
+    char value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+Int32 Element::getValueAsInt32(size_t index) const
+{
+    Int32 value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+Int64 Element::getValueAsInt64(size_t index) const
+{
+    Int64 value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+Float32 Element::getValueAsFloat32(size_t index) const
+{
+    Float32 value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+Float64 Element::getValueAsFloat64(size_t index) const
+{
+    Float64 value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+Datetime Element::getValueAsDatetime(size_t index) const
+{
+    Datetime value;
+    ExceptionUtil::throwOnError(getValueAs(&amp;value, index));
+    return value;
+}
+
+inline
+const char* Element::getValueAsString(size_t index) const
+{
+    const char* tmpStringBuffer;
+    ExceptionUtil::throwOnError(blpapi_Element_getValueAsString(
+                                d_handle_p,
+                                &amp;tmpStringBuffer,
+                                index));
+    return tmpStringBuffer;
+}
+
+inline
+Element Element::getValueAsElement(size_t index) const
+{
+    blpapi_Element_t *element;
+    ExceptionUtil::throwOnError(blpapi_Element_getValueAsElement(d_handle_p,
+                                                                 &amp;element,
+                                                                 index));
+    return Element(element);
+}
+
+inline
+Name Element::getValueAsName(size_t index) const
+{
+    blpapi_Name_t *name;
+    ExceptionUtil::throwOnError(blpapi_Element_getValueAsName(d_handle_p,
+                                                              &amp;name,
+                                                              index));
+    return name;
+}
+
+inline
+Element Element::getChoice() const
+{
+    blpapi_Element_t *element;
+    ExceptionUtil::throwOnError(blpapi_Element_getChoice(d_handle_p,
+                                                         &amp;element));
+    return Element(element);
+}
+
+inline
+bool Element::getElementAsBool(const char* name) const
+{
+    return getElement(name).getValueAsBool();
+}
+
+inline
+bool Element::getElementAsBool(const Name&amp; name) const
+{
+    return getElement(name).getValueAsBool();
+}
+
+inline
+char Element::getElementAsChar(const char* name) const
+{
+    return getElement(name).getValueAsChar();
+}
+
+inline
+char Element::getElementAsChar(const Name&amp; name) const
+{
+    return getElement(name).getValueAsChar();
+}
+
+inline
+Int32 Element::getElementAsInt32(const char* name) const
+{
+    return getElement(name).getValueAsInt32();
+}
+
+inline
+Int32 Element::getElementAsInt32(const Name&amp; name) const
+{
+    return getElement(name).getValueAsInt32();
+}
+
+inline
+Int64 Element::getElementAsInt64(const char* name) const
+{
+    return getElement(name).getValueAsInt64();
+}
+
+inline
+Int64 Element::getElementAsInt64(const Name&amp; name) const
+{
+    return getElement(name).getValueAsInt64();
+}
+
+inline
+Float32 Element::getElementAsFloat32(const char* name) const
+{
+    return getElement(name).getValueAsFloat32();
+}
+
+inline
+Float32 Element::getElementAsFloat32(const Name&amp; name) const
+{
+    return getElement(name).getValueAsFloat32();
+}
+
+inline
+Float64 Element::getElementAsFloat64(const char* name) const
+{
+    return getElement(name).getValueAsFloat64();
+}
+
+inline
+Float64 Element::getElementAsFloat64(const Name&amp; name) const
+{
+    return getElement(name).getValueAsFloat64();
+}
+
+inline
+Datetime Element::getElementAsDatetime(const char* name) const
+{
+    return getElement(name).getValueAsDatetime();
+}
+
+inline
+Datetime Element::getElementAsDatetime(const Name&amp; name) const
+{
+    return getElement(name).getValueAsDatetime();
+}
+
+inline
+const char* Element::getElementAsString(const char* name) const
+{
+    return getElement(name).getValueAsString();
+}
+
+inline
+const char* Element::getElementAsString(const Name&amp; name) const
+{
+    return getElement(name).getValueAsString();
+}
+
+inline
+Name Element::getElementAsName(const char* name) const
+{
+    return getElement(name).getValueAsName();
+}
+
+inline
+Name Element::getElementAsName(const Name&amp; name) const
+{
+    return getElement(name).getValueAsName();
+}
+
+inline
+const blpapi_Element_t* Element::handle() const
+{
+    return d_handle_p;
+}
+
+inline
+std::ostream&amp; Element::print(
+        std::ostream&amp; stream,
+        int level,
+        int spacesPerLevel) const
+{
+    blpapi_Element_print(
+            d_handle_p, OstreamWriter,  &amp;stream, level, spacesPerLevel);
+    return stream;
+}
+
+inline
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream, const Element&amp; element)
+{
+    element.print(stream, 0, -1);
+    return stream;
+}
+
+}  // close namespace blpapi
+}  // close namespace BloombergLP
+
+#endif // #ifdef __cplusplus
+#endif // #ifndef INCLUDED_BLPAPI_ELEMENT
+</pre>
+</body>
+</html>

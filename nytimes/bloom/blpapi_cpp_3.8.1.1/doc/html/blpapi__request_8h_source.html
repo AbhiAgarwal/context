@@ -1,0 +1,638 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+<html>
+<title>BLPAPI C++</title>
+<html>
+<pre>
+/* Copyright 2012. Bloomberg Finance L.P.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:  The above
+ * copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+// blpapi_request.h                                                   -*-C++-*-
+#ifndef INCLUDED_BLPAPI_REQUEST
+#define INCLUDED_BLPAPI_REQUEST
+
+//@PURPOSE: Defines a request which can be sent for a service.
+//
+//@CLASSES:
+// blpapi::Request: a request for a particular service
+//
+//@DESCRIPTION: This file defines a &#39;Request&#39;. A generic Request object is
+// created for a service using Service::createRequest() and sent over a session
+// using Session::sendRequest().
+
+#ifndef INCLUDED_BLPAPI_TYPES
+#include &lt;blpapi_types.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_CORRELATIONID
+#include &lt;blpapi_correlationid.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_ELEMENT
+#include &lt;blpapi_element.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_EXCEPTION
+#include &lt;blpapi_exception.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_DEFS
+#include &lt;blpapi_defs.h&gt;
+#endif
+
+struct blpapi_Request;
+typedef struct blpapi_Request blpapi_Request_t;
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif
+
+BLPAPI_EXPORT
+void blpapi_Request_destroy(
+        blpapi_Request_t *request);
+
+BLPAPI_EXPORT
+blpapi_Element_t* blpapi_Request_elements(
+        blpapi_Request_t *request);
+
+BLPAPI_EXPORT
+void blpapi_Request_setPreferredRoute(
+        blpapi_Request_t *request,
+        blpapi_CorrelationId_t *correlationId);
+
+#ifdef __cplusplus
+}
+
+#ifndef INCLUDED_IOSFWD
+#include &lt;iosfwd&gt;
+#define INCLUDED_IOSFWD
+#endif
+
+namespace BloombergLP {
+namespace blpapi {
+
+// FORWARD DECLARATION
+class RequestRef;
+                         // =============
+                         // class Request
+                         // =============
+
+class Request {
+    // A single request to a single service.
+    //
+    // Request objects are created using Service::createRequest() or
+    // Service::createAuthorizationRequest(). They are used with
+    // Session::sendRequest() or Session::sendAuthorizationRequest().
+    //
+    // The Request object contains the parameters for a single request
+    // to a single service. Once a Request has been created its fields
+    // can be populated directly using the convenience functions set()
+    // and append() functions or using the Element interface on the
+    // Element returned by asElement().
+    //
+    // The schema for the Request can be queried using the Element
+    // interface on the Element returned by asElement().
+    //
+    // Request objects cannot be duplicated. Copying a Request causes
+    // the original Request to become invalid. The API provides
+    // support for common idioms which require a normal copy
+    // constructor. For example, you can write the following code.
+    //..
+    // Request request(service.createRequest(&quot;operationName&quot;));
+    //..
+    // However, if you write this &#39;requestOne&#39; will become invalid and
+    // unusable.
+    //..
+    // Request requestOne(service.createRequest(&quot;operationName&quot;));
+    // Request requestTwo(requestOne);
+    // // At this point requestOne is no longer valid
+    //..
+    // This should be written as follows.
+    //..
+    // Request requestOne(service.createRequest(&quot;operationName&quot;));
+    // Request requestTwo(service.createRequest(&quot;operationName&quot;));
+    //..
+
+    blpapi_Request_t *d_handle;
+    Element           d_elements;
+
+    Request&amp; operator=(const Request&amp; rhs); // not implemented
+
+  public:
+    explicit Request(blpapi_Request_t *handle);
+
+    Request(RequestRef src);
+    Request(Request &amp;src);
+        // Initialize a Request from the specified non-const
+        // &#39;src&#39;. After this the &#39;src&#39; Request is invalid.
+
+    ~Request();
+        // Destructor.
+
+    // MANIPULATORS
+    operator RequestRef();
+
+    void set(const char* name, bool value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, char value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, Int32 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, Int64 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, Float32 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, Float64 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, const Datetime&amp; value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const char* name, const char* value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, bool value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, char value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, Int32 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, Int64 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, Float32 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, Float64 value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, const Datetime&amp; value);
+        // Equivalent to asElement().set(name, value).
+
+    void set(const Name&amp; name, const char* value);
+        // Equivalent to asElement().set(name, value).
+
+    void append(const char* name, bool value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, char value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, Int32 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, Int64 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, Float32 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, Float64 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, const Datetime&amp; value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const char* name, const char* value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, bool value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, char value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, Int32 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, Int64 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, Float32 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, Float64 value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, const Datetime&amp; value);
+        // Equivalent to asElement().append(name, value).
+
+    void append(const Name&amp; name, const char* value);
+        // Equivalent to asElement().append(name, value).
+
+    Element asElement();
+        // Returns the contents of this request as a modifiable
+        // Element.
+
+    Element getElement(const char* name);
+        // Equivalent to asElement().getElement(name).
+
+    Element getElement(const Name&amp; name);
+        // Equivalent to asElement().getElement(name).
+
+
+    // ACCESSORS
+
+    const Element getElement(const char* name) const;
+        // Equivalent to asElement().getElement(name).
+
+    const Element getElement(const Name&amp; name) const;
+        // Equivalent to asElement().getElement(name).
+
+    const Element asElement() const;
+        // Returns the contents of this request as a read-only
+        // Element.
+
+    blpapi_Request_t* handle() const;
+
+    std::ostream&amp; print(std::ostream&amp; stream,
+                        int level=0,
+                        int spacesPerLevel=4) const;
+       // Format this Element to the specified output &#39;stream&#39; at the
+       // (absolute value of) the optionally specified indentation
+       // &#39;level&#39; and return a reference to &#39;stream&#39;. If &#39;level&#39; is
+       // specified, optionally specify &#39;spacesPerLevel&#39;, the number
+       // of spaces per indentation level for this and all of its
+       // nested objects. If &#39;level&#39; is negative, suppress indentation
+       // of the first line. If &#39;spacesPerLevel&#39; is negative, format
+       // the entire output on one line, suppressing all but the
+       // initial indentation (as governed by &#39;level&#39;).
+};
+
+// FREE OPERATORS
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream, const Request &amp;request);
+    // Write the value of the specified &#39;request&#39; object to the specified
+    // output &#39;stream&#39; in a single-line format, and return a reference to
+    // &#39;stream&#39;.  If &#39;stream&#39; is not valid on entry, this operation has no
+    // effect.  Note that this human-readable format is not fully specified,
+    // can change without notice, and is logically equivalent to:
+    //..
+    //  print(stream, 0, -1);
+    //..
+                         // ================
+                         // class RequestRef
+                         // ================
+
+class RequestRef {
+    Request *d_request_p;
+
+public:
+    RequestRef(Request *request_p);
+    Request* ptr() const;
+    Request* operator-&gt;() const;
+};
+
+//=============================================================================
+//                           INLINE FUNCTION DEFINITIONS
+//=============================================================================
+
+                            // -------------
+                            // class Request
+                            // -------------
+
+inline
+Request::Request(blpapi_Request_t *handle)
+{
+    d_handle = handle;
+    if (handle) {
+        d_elements.rebind(blpapi_Request_elements(handle));
+    }
+}
+
+inline
+Request::Request(RequestRef ref)
+{
+    Request *src = ref.ptr();
+    d_handle = src-&gt;d_handle;
+    d_elements = src-&gt;d_elements;
+    src-&gt;d_handle = 0;
+    src-&gt;d_elements.rebind(0);
+}
+
+inline
+Request::Request(Request &amp;src)
+{
+    d_handle = src.d_handle;
+    d_elements = src.d_elements;
+    src.d_handle = 0;
+    src.d_elements.rebind(0);
+}
+
+inline
+Request::~Request()
+{
+    if (d_handle) {
+        blpapi_Request_destroy(d_handle);
+    }
+}
+
+inline
+Request::operator RequestRef()
+{
+    return this;
+}
+
+inline
+void Request::set(const char* element, bool value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, char value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, Int32 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, Int64 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, Float32 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, Float64 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, const Datetime&amp; value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const char* element, const char* value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::append(const char* element, bool value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, char value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, Int32 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, Int64 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, Float32 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, Float64 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, const Datetime&amp; value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const char* element, const char* value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::set(const Name&amp; element, bool value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, char value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, Int32 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, Int64 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, Float32 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, Float64 value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, const Datetime&amp; value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::set(const Name&amp; element, const char* value)
+{
+    d_elements.setElement(element, value);
+}
+
+inline
+void Request::append(const Name&amp; element, bool value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, char value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, Int32 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, Int64 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, Float32 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, Float64 value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, const Datetime&amp; value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+inline
+void Request::append(const Name&amp; element, const char* value)
+{
+    d_elements.getElement(element).appendValue(value);
+}
+
+
+inline
+Element Request::getElement(const char* name)
+{
+    return d_elements.getElement(name);
+}
+
+inline
+Element Request::getElement(const Name&amp; name)
+{
+    return d_elements.getElement(name);
+}
+
+inline
+Element Request::asElement()
+{
+    return d_elements;
+}
+
+
+inline
+const Element Request::getElement(const char* name) const
+{
+    return d_elements.getElement(name);
+}
+
+inline
+const Element Request::getElement(const Name&amp; name) const
+{
+    return d_elements.getElement(name);
+}
+
+inline
+const Element Request::asElement() const
+{
+    return d_elements;
+}
+
+inline
+blpapi_Request_t* Request::handle() const
+{
+    return d_handle;
+}
+
+inline
+std::ostream&amp; Request::print(
+        std::ostream&amp; stream,
+        int level,
+        int spacesPerLevel) const
+{
+    return d_elements.print(stream, level, spacesPerLevel);
+}
+
+inline
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream, const Request &amp;request)
+{
+    return request.print(stream, 0,-1);
+}
+                            // ----------------
+                            // class RequestRef
+                            // ----------------
+
+inline
+RequestRef::RequestRef(Request *request)
+: d_request_p(request)
+{
+}
+
+inline
+Request* RequestRef::ptr() const
+{
+    return this-&gt;d_request_p;
+}
+
+inline
+Request* RequestRef::operator-&gt;() const
+{
+    return this-&gt;d_request_p;
+}
+
+}  // close namespace blpapi
+}  // close namespace BloombergLP
+
+#endif // #ifdef __cplusplus
+
+#endif // #ifndef INCLUDED_BLPAPI_REQUEST
+</pre>
+</body>
+</html>

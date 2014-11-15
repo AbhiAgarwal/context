@@ -1,0 +1,54 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+<html>
+<title>BLPAPI C++</title>
+<html>
+<pre>
+ Copyright (C) 2010 Bloomberg Finance L.P.
+ blpapi.txt
+
+@PURPOSE: Bloomberg API C/C++ SDK
+
+@DESCRIPTION:
+
+The Bloomberg API provides developers with 24x7 programmatic access to data from the
+Bloomberg Data Center for use in customer applications.
+
+The Bloomberg API lets you integrate streaming real-time and delayed data, reference data,
+historical data, intraday data, and Bloomberg derived data into your own custom and thirdparty
+applications. You can choose which data you require down to the individual field level.
+
+The Bloomberg API uses an event-driven model. The interface is thread-safe and threadaware,
+giving applications the ability to utilize multiple processors efficiently. The Bloomberg
+API automatically breaks large results into smaller chunks and can provide conflated
+streaming data to improve the bandwidth usage and the latency of applications.
+
+The Bloomberg API supports run-time downloadable schemas for the services it provides
+and provides methods to query these schemas at runtime. This means the Bloomberg API
+can support additional services without additions to the interface. It also makes writing
+applications that can adapt to changes in services or entirely new services simple.
+
+The Bloomberg API object model contains a small number of key objects which applications
+use to request, receive and interpret data.
+
+An application creates a Session object to manage its connection with the Bloomberg
+infrastructure. (Some applications may choose to create multiple Session objects for
+redundancy).
+
+Using the Session object, an application creates a Service object and then &quot;opens&#39; each
+Bloomberg service that it will use. For example, Bloomberg provides streaming market data
+and reference data as services.
+
+There are two programming paradigms that can be used with the Service object. The client
+can make individual requests (via a Request object) for data or the client can start a
+subscription (managed via a Subscription object) with the service for ongoing data
+updates. Depending on the services being used, a customer application may be written to
+handle both paradigms. Whichever paradigm or paradigms are used, the Bloomberg
+infrastructure replies with events (received at the client as Event objects) which the client
+must handle asynchronously.
+
+Programmatically, the customer application obtains Event objects for the Session and then
+extracts from those Event objects one or more Message objects containing the Bloomberg
+data.
+</pre>
+</body>
+</html>

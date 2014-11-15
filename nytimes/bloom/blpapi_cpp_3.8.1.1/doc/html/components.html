@@ -1,0 +1,587 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>BLPAPI C++</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javaScript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css"/>
+    <style>
+      div.hanging {
+        padding-left: 0.75in;
+        text-indent: -0.50in;
+      }
+      div.unhanging {
+        text-indent:     0in;
+      }
+      a.glossary {
+        font-weight: bold;
+        font-style: italic;
+      }
+    </style>
+    <script>
+
+var CELL_IDX_GRP_BUTTON = 0;
+var CELL_IDX_GRP_NAME   = 1;
+var CELL_IDX_PKG_BUTTON = 2;
+var CELL_IDX_PKG_NAME   = 3;
+var CELL_IDX_CMP_NAME   = 4;
+var CELL_IDX_PURPOSE    = 5;
+
+function bdedox_isGrpRow(rowObj)
+{
+    var grpButtonCellObj = rowObj.cells[CELL_IDX_GRP_BUTTON];
+    var              obj = grpButtonCellObj.childNodes[0];
+    return bdedox_isButtonObj(obj);
+}
+
+function bdedox_isPkgRow(rowObj)
+{
+    var pkgButtonCellObj = rowObj.cells[CELL_IDX_PKG_BUTTON];
+    var              obj = pkgButtonCellObj.childNodes[0];
+    return bdedox_isButtonObj(obj);
+}
+
+function bdedox_isCmpRow(rowObj)
+{
+    return !bdedox_isPkgRow(rowObj) && !bdedox_isGrpRow(rowObj)
+}
+
+function bdedox_showRow(rowObj)
+{
+    rowObj.style.display = 'table-row';
+}
+
+function bdedox_hideRow(rowObj)
+{
+    rowObj.style.display = 'none';
+}
+
+function bdedox_setButtonToExpanded(buttonObj)
+{
+    buttonObj.innerHTML = '-';
+}
+
+function bdedox_setButtonToCollapsed(buttonObj)
+{
+    buttonObj.innerHTML = '+';
+}
+
+function bdedox_buttonShowsExpanded(buttonObj)
+{
+    return "-" == buttonObj.innerHTML;
+}
+
+function bdedox_buttonShowsCollapsed(buttonObj)
+{
+    return "+" == buttonObj.innerHTML;
+}
+
+function bdedox_buttonShowsEmpty(buttonObj)
+{
+    return "." == buttonObj.innerHTML;
+}
+
+function bdedox_isEmptyNameCell(cellObj)
+{
+    return '&nbsp;' == cellObj.innerHTML;
+}
+
+function bdedox_isRowWithExpandedGroupButton(rowObj)
+{
+    var grpButtonCellObj = rowObj.cells[CELL_IDX_GRP_BUTTON];
+    var   grpNameCellObj = rowObj.cells[CELL_IDX_GRP_NAME];
+    var     grpButtonObj = grpButtonCellObj.childNodes[0];
+
+    return bdedox_buttonShowsExpanded(grpButtonObj)
+}
+
+function bdedox_isRowObj(obj)
+{
+    return "TR".toLowerCase() == obj.nodeName.toLowerCase();
+}
+
+function bdedox_isButtonObj(obj)
+{
+    return "BUTTON".toLowerCase() == obj.nodeName.toLowerCase();
+}
+
+
+function bdedox_getPrevRow(rowObj)
+{
+    if (null == rowObj) {
+        return null;                                                  // RETURN
+    }
+
+    var candidateRow;
+    for (candidateRow  = rowObj.previousSibling;
+         candidateRow != null;
+         candidateRow  = candidateRow.previousSibling)
+    {
+         if (bdedox_isRowObj(candidateRow)) {
+             break;
+         }
+    }
+    return candidateRow;
+}
+
+function bdedox_getNextRow(rowObj)
+{
+    if (null == rowObj) {
+        return null;                                                  // RETURN
+    }
+
+    var candidateRow;
+    for (candidateRow  = rowObj.nextSibling;
+         candidateRow != null;
+         candidateRow  = candidateRow.nextSibling)
+    {
+         if (bdedox_isRowObj(candidateRow)) {
+             break;
+         }
+    }
+    return candidateRow;
+}
+
+function bdedox_cagButtonOnClick(cagButtonObj, tableId)
+    // Collapse all group rows (thereby hiding all component and package rows)
+    // in the table having the specified 'tableId' when the specified
+    // 'cagButtonObj' is clicked.  Clicking the button when the table is
+    // already collapsed has no effect.
+{
+    var tableObj          = document.getElementById(tableId);
+    var rowObjsOfInterest = new Array();
+
+    for (var rowObj  = tableObj.rows[1];
+             rowObj != null;
+             rowObj  = bdedox_getNextRow(rowObj))
+    {
+        if (bdedox_isRowWithExpandedGroupButton(rowObj)) {
+            rowObjsOfInterest.push(rowObj);
+        }
+    }
+
+    while (0 < rowObjsOfInterest.length) {
+        var           rowObj = rowObjsOfInterest.pop();
+        var grpButtonCellObj = rowObj.cells[CELL_IDX_GRP_BUTTON];
+        var   grpNameCellObj = rowObj.cells[CELL_IDX_GRP_NAME];
+        var     grpButtonObj = grpButtonCellObj.childNodes[0];
+
+        bdedox_grpButtonOnClick(grpButtonObj);
+    }
+}
+
+function bdedox_eapButtonOnClick(eapButtonObj, tableId)
+    // Display all component rows (by expanding all group group and package
+    // rows) in the table having the specified 'tableId' when the specified
+    // 'eapButtonObj' is clicked.  Clicking the button when the table is
+    // already expanded has no effect.
+{
+    var tableObj = document.getElementById(tableId);
+
+    for (var rowObj  = tableObj.rows[1];
+             rowObj != null;
+             rowObj  = bdedox_getNextRow(rowObj))
+    {
+        var grpButtonColumnCellObj = rowObj.cells[CELL_IDX_GRP_BUTTON];
+        var   grpNameColumnCellObj = rowObj.cells[CELL_IDX_GRP_NAME];
+        var                    obj = grpButtonColumnCellObj.childNodes[0];
+
+        if (bdedox_isButtonObj(obj)) {
+            if (bdedox_buttonShowsCollapsed(obj)) {
+                bdedox_grpButtonOnClick(obj)
+            }
+        } else {
+            var pkgButtonColumnCellObj = rowObj.cells[CELL_IDX_PKG_BUTTON];
+            var                    obj = pkgButtonColumnCellObj.childNodes[0];
+
+            if (bdedox_isButtonObj(obj)) {
+                if (bdedox_buttonShowsCollapsed(obj)) {
+                    rowObj = bdedox_pkgButtonOnClick(obj);
+                }
+            }
+         }
+    }
+}
+
+function bdedox_grpButtonOnClick(grpButtonObj)
+    // Expand (collapse) the package rows following the row containing the
+    // specified 'grpButtonObj' if the current state of that object shows that
+    // it is collapsed (expanded).  Return the the highest indexed row object
+    // expanded (collapsed) or 'null'.  When a group is expanded (collapsed)
+    // the rows are made visible (invisible) from top-to-bottom
+    // (bottom-to-top).
+{
+    var  cellObj = grpButtonObj.parentNode;
+    var   rowObj =      cellObj.parentNode;
+    var tbodyObj =       rowObj.parentNode;
+    var tableObj =     tbodyObj.parentNode;
+
+    var cellIdxOfClickedButton = cellObj.cellIndex;
+    var  rowIdxOfClickedButton =  rowObj.rowIndex;
+
+    var returnedRowObj = null;
+    var amCollapsing   = bdedox_buttonShowsExpanded(grpButtonObj);
+
+    if (amCollapsing) {
+        bdedox_setButtonToCollapsed(grpButtonObj);
+
+        var rowObjsOfInterest = new Array();
+
+        for (var rowObj  = tableObj.rows[rowIdxOfClickedButton + 1];
+                 rowObj != null;
+                 rowObj  = bdedox_getNextRow(rowObj))
+        {
+            if (bdedox_isGrpRow(rowObj)) {
+                break;
+            }
+
+            if (!bdedox_isPkgRow(rowObj)) {
+                continue;
+            }
+
+            rowObjsOfInterest.push(rowObj);
+            returnedRowObj = rowObj;
+        }
+
+        while (0 < rowObjsOfInterest.length) {
+            var           rowObj = rowObjsOfInterest.pop();
+            var pkgButtonCellObj = rowObj.cells[cellIdxOfClickedButton + 2]
+            var     pkgButtonObj = pkgButtonCellObj.childNodes[0];
+
+            if (bdedox_buttonShowsExpanded(pkgButtonObj)) {
+                bdedox_pkgButtonOnClick(pkgButtonObj);
+            }
+            bdedox_hideRow(rowObj);
+        }
+    } else {
+        bdedox_setButtonToExpanded(grpButtonObj);
+
+        for (var rowObj  = tableObj.rows[rowIdxOfClickedButton + 1];
+                 rowObj != null;
+                 rowObj  = bdedox_getNextRow(rowObj))
+        {
+            if (bdedox_isGrpRow(rowObj)) {
+                break;
+            }
+
+            if (bdedox_isPkgRow(rowObj)) {
+                bdedox_showRow(rowObj);
+            }
+            returnedRowObj = rowObj;
+        }
+    }
+
+    return returnedRowObj;
+}
+
+function bdedox_pkgButtonOnClick(pkgButtonObj)
+    // Expand (collapse) the component rows following the row containing the
+    // specified 'pkgButtonObj' if the current state of that object shows that
+    // it is collapsed (expanded).  Return the the highest indexed row object
+    // expanded (collapsed) or 'null'.  When a package is expanded (collapsed)
+    // the rows are made visible (invisible) from top-to-bottom
+    // (bottom-to-top).
+{
+    var  cellObj = pkgButtonObj.parentNode;
+    var   rowObj =      cellObj.parentNode;
+    var tbodyObj =       rowObj.parentNode;
+    var tableObj =     tbodyObj.parentNode;
+
+    var cellIdxOfClickedButton = cellObj.cellIndex;
+    var  rowIdxOfClickedButton =  rowObj.rowIndex;
+
+    if (bdedox_buttonShowsEmpty(pkgButtonObj)) {
+        return null;
+    }
+
+    var returnedRowObj = null;
+    var amCollapsing   = bdedox_buttonShowsExpanded(pkgButtonObj);
+
+    if (amCollapsing) {
+        bdedox_setButtonToCollapsed(pkgButtonObj);
+
+        // Identify range of rows of interest.
+        for (var rowObj  = tableObj.rows[rowIdxOfClickedButton + 1];
+                 rowObj != null;
+                 rowObj  = bdedox_getNextRow(rowObj))
+        {
+            if (!bdedox_isCmpRow(rowObj)) {
+                break;
+            }
+
+            returnedRowObj = rowObj;
+        }
+
+        // Change rows of interest, from bottom-to-top.
+        var initialRowObj = tableObj.rows[rowIdxOfClickedButton + 0];
+        for (var rowObj  = returnedRowObj;
+                 rowObj !=  initialRowObj;
+                 rowObj  = bdedox_getPrevRow(rowObj))
+        {
+            bdedox_hideRow(rowObj);
+        }
+
+    } else {
+        bdedox_setButtonToExpanded(pkgButtonObj);
+
+        for (var rowObj  = tableObj.rows[rowIdxOfClickedButton + 1];
+                 rowObj != null;
+                 rowObj  = bdedox_getNextRow(rowObj))
+        {
+              if (!bdedox_isCmpRow(rowObj)) {
+                  break;
+              }
+
+              bdedox_showRow(rowObj);
+              returnedRowObj = rowObj;
+        }
+    }
+
+    return returnedRowObj;
+}
+
+function bdedox_buttonOnMouseOver(object)
+{
+    object.className='over';
+}
+
+function bdedox_buttonOnMouseOut(object)
+{
+    object.className='out';
+}
+
+function bdedox_cagButtonOnMouseOut(object)
+{
+    object.className='outButtonTable';
+}
+
+function bdedox_cagButtonOnMouseOver(object)
+{
+    object.className='overButtonTable';
+}
+
+function bdedox_eapButtonOnMouseOut(object)
+{
+    object.className='outButtonTable';
+}
+
+function bdedox_eapButtonOnMouseOver(object)
+{
+    object.className='overButtonTable';
+}
+
+function bdedox_pageLoaded(tableInitiallyCollapsed)
+{
+    if (tableInitiallyCollapsed) {
+        var cagButtonObj = document.getElementById("cagButton");
+        bdedox_cagButtonOnClick(cagButtonObj, "myTable");
+    }
+}
+    </script>
+   <style type="text/css">
+    BUTTON.over {
+        background-color:rgb(210,187,46);
+        padding-top: 2px;
+        padding-bottom:2px;
+        font-family:"Courier New";
+        vertical-alignment: middle;
+        height: 25px;
+    }
+    BUTTON.out  {
+        background-color:rgb(149,179,215);
+        padding-top: 2px;
+        padding-bottom:2px;
+        font-family:"Courier New";
+        vertical-alignment: middle;
+        height: 25px;
+    }
+
+    <!-- match grp row color -->
+    BUTTON.overButtonTable  {
+        background-color:#DAD6AC; padding-top: 2px; padding-bottom:2px;
+    }
+    <!-- match pkg row color -->
+    BUTTON.outButtonTable  {
+        background-color:#CAC589; padding-top: 2px; padding-bottom:2px;
+    }
+
+   th.cmpTableHeader {
+    font-size:  medium;
+    text-align: left;
+    background-color: #EBEFF6;
+    font-weight: bold;
+    border: 1px solid #C4CFE5;
+    margin: 2px 0px 2px 0;
+    padding: 2px 10px;
+   }
+
+   </style>
+</head>
+<!--
+<body onload='searchBox.OnSelectItem(0);'>
+-->
+<body>
+
+
+  </div>
+<!-- Generated by Doxygen 1.7.1 -->
+<div class="navigation" id="top">
+  <div class="tabs">
+    <ul class="tablist">
+      <li><a href="components.html"><span>Main&nbsp;Page</span></a></li>
+      <li class="current"><a href="components.html"><span>Components</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<h1>Components</h1>  </div>
+</div>
+<div class="contents">
+<p>Here is a table of all package groups (a.k.a., groups), packages, and components:</p>
+ <table id='bdedox_componentsButtonTable_top' border=1>
+  <col width='050'>
+  <col width='050'>
+  <col width='050'>
+  <tbody>
+  <tr id="buttonRow">
+   <td id="cagButton">
+    <button class="outButtonTable"
+          onClick="bdedox_cagButtonOnClick    (this, 'bdedox_componentsTable')"
+      onMouseOver="bdedox_cagButtonOnMouseOver(this)"
+       onMouseOut="bdedox_cagButtonOnMouseOut (this)"
+    >Collapse All Groups
+    </button>
+   </td>
+   <td id="eapButton">
+    <button class="outButtonTable"
+          onClick="bdedox_eapButtonOnClick    (this, 'bdedox_componentsTable')"
+      onMouseOver="bdedox_eapButtonOnMouseOver(this)"
+       onMouseOut="bdedox_eapButtonOnMouseOut (this)"
+    >Expand All Packages
+    </button>
+   </td>
+  </tr>
+  </tbody>
+ </table>
+<p>&nbsp;</p>
+<table id="bdedox_componentsTable">
+<tr>
+<th class="cmpTableHeader">&nbsp</th>              <!-- grp button -->
+<th class="cmpTableHeader">Group</th>              <!-- grp name   -->
+<th class="cmpTableHeader">&nbsp</th>              <!-- pkg button -->
+<th class="cmpTableHeader">Package</th>            <!-- pkg name   -->
+<th class="cmpTableHeader">Mnemonic/Component</th> <!-- cmp name   -->
+<th class="cmpTableHeader">Purpose</th>            <!-- purpose    -->
+</tr>
+
+<tr style="display: table-row;"><td class="indexkey" style="padding: 2px 2px;" style="background-color:#CAC589;"><button class="out"     onClick="bdedox_grpButtonOnClick (this)" onMouseOver="bdedox_buttonOnMouseOver(this)"  onMouseOut="bdedox_buttonOnMouseOut (this)">+</button></td></td><td class="indexkey" style="background-color:#CAC589;"><span style="font-weight: normal;">None</span></td><td style="background-color:#CAC589;">&nbsp;</td><td style="background-color:#CAC589;">&nbsp;</td><td style="background-color:#CAC589;">&nbsp;</td><td class="indexkey" style="background-color:#CAC589;"><span style="font-weight: normal;">Isolated (Stand-Alone) Packages</span></td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey" style="padding: 2px 0px;" style="background-color:#DAD6AC;"><button class="out"     onClick="bdedox_pkgButtonOnClick (this)" onMouseOver="bdedox_buttonOnMouseOver(this)"  onMouseOut="bdedox_buttonOnMouseOut (this)">+</button></td></td><td class="indexkey" style="background-color:#DAD6AC;"><a class="el" href="group__blpapi.html" target="_blank">blpapi</a></td><td style="background-color:#DAD6AC;">&nbsp;</td><td class="indexvalue" style="background-color:#DAD6AC;">Bloomberg API C/C++ SDK</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__abstractsession.html" target="_blank">blpapi_abstractsession</a></td><td class="indexvalue">A common interface shared between publish and consumer sessions</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__call.html" target="_blank">blpapi_call</a></td><td class="indexvalue">Provide functions for dispatchtbl</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__constant.html" target="_blank">blpapi_constant</a></td><td class="indexvalue">Provide a representation for schema-level enumeration constants</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__correlationid.html" target="_blank">blpapi_correlationid</a></td><td class="indexvalue">Provide a key to identify individual subscriptions or requests</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__datetime.html" target="_blank">blpapi_datetime</a></td><td class="indexvalue">Represents a date and/or time</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__defs.html" target="_blank">blpapi_defs</a></td><td class="indexvalue">Common definitions used by the library</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__diagnosticsutil.html" target="_blank">blpapi_diagnosticsutil</a></td><td class="indexvalue">Provide api to access diagnostics information on the blpapi library</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__dispatchtbl.html" target="_blank">blpapi_dispatchtbl</a></td><td class="indexvalue">Work with dispatch table</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__element.html" target="_blank">blpapi_element</a></td><td class="indexvalue">Provide a representation of an item in a message</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__error.html" target="_blank">blpapi_error</a></td><td class="indexvalue">Provide a collection of errors that library can return</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__event.html" target="_blank">blpapi_event</a></td><td class="indexvalue">A component which defines events related operations</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__eventdispatcher.html" target="_blank">blpapi_eventdispatcher</a></td><td class="indexvalue">Provide a dispatcher to dispatch events</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__eventformatter.html" target="_blank">blpapi_eventformatter</a></td><td class="indexvalue">Add messages to an Event for publishing</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__exception.html" target="_blank">blpapi_exception</a></td><td class="indexvalue">Defines Exceptions that can be thrown by the blpapi library</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__highresolutionclock.html" target="_blank">blpapi_highresolutionclock</a></td><td class="indexvalue">Provide a high resolution clock</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__identity.html" target="_blank">blpapi_identity</a></td><td class="indexvalue">Provide access to the entitlements for a user</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__logging.html" target="_blank">blpapi_logging</a></td><td class="indexvalue">Provide a C call to register a call back for logging</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__message.html" target="_blank">blpapi_message</a></td><td class="indexvalue">Defines a message containing elements</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__name.html" target="_blank">blpapi_name</a></td><td class="indexvalue">Provide a representation of strings for use as container keys</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__providersession.html" target="_blank">blpapi_providersession</a></td><td class="indexvalue">Provide a session that can be used for providing services</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__request.html" target="_blank">blpapi_request</a></td><td class="indexvalue">Defines a request which can be sent for a service</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__resolutionlist.html" target="_blank">blpapi_resolutionlist</a></td><td class="indexvalue">Provide a representation of a list of topics</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__schema.html" target="_blank">blpapi_schema</a></td><td class="indexvalue">Provide a representation of a schema describing structured messages</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__service.html" target="_blank">blpapi_service</a></td><td class="indexvalue">A service which provides access to API data (provide or consume)</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__session.html" target="_blank">blpapi_session</a></td><td class="indexvalue">Provide consumer session to get Bloomberg Service</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__sessionoptions.html" target="_blank">blpapi_sessionoptions</a></td><td class="indexvalue">A common interface shared between publish and consumer sessions</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__streamproxy.html" target="_blank">blpapi_streamproxy</a></td><td class="indexvalue">A signature for callback on print and default C++ implementation</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__subscriptionlist.html" target="_blank">blpapi_subscriptionlist</a></td><td class="indexvalue">Provide a list of subscriptions</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__timepoint.html" target="_blank">blpapi_timepoint</a></td><td class="indexvalue">Provide a time point with respect to an epoch</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__topic.html" target="_blank">blpapi_topic</a></td><td class="indexvalue">Provide representation of a Topic</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__topiclist.html" target="_blank">blpapi_topiclist</a></td><td class="indexvalue">Provide a representation of a list of topics</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__types.html" target="_blank">blpapi_types</a></td><td class="indexvalue">Provide BLPAPI types</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__versioninfo.html" target="_blank">blpapi_versioninfo</a></td><td class="indexvalue">Provide BLPAPI SDK library version information</td></tr>
+
+<tr style="display: none;"><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td class="indexkey"><a class="el" href="group__blpapi__versionmacros.html" target="_blank">blpapi_versionmacros</a></td><td class="indexvalue">Provide preprocessor macros for BLPAPI library version information</td></tr>
+
+</table>
+<p>&nbsp;</p>
+ <table id='bdedox_componentsButtonTable_bottom' border=1>
+  <col width='050'>
+  <col width='050'>
+  <col width='050'>
+  <tbody>
+  <tr id="buttonRow">
+   <td id="cagButton">
+    <button class="outButtonTable"
+          onClick="bdedox_cagButtonOnClick    (this, 'bdedox_componentsTable')"
+      onMouseOver="bdedox_cagButtonOnMouseOver(this)"
+       onMouseOut="bdedox_cagButtonOnMouseOut (this)"
+    >Collapse All Groups
+    </button>
+   </td>
+   <td id="eapButton">
+    <button class="outButtonTable"
+          onClick="bdedox_eapButtonOnClick    (this, 'bdedox_componentsTable')"
+      onMouseOver="bdedox_eapButtonOnMouseOver(this)"
+       onMouseOut="bdedox_eapButtonOnMouseOut (this)"
+    >Expand All Packages
+    </button>
+   </td>
+  </tr>
+  </tbody>
+ </table>
+</div>
+<hr class="footer"/><address class="footer"><small>Generated on Wed Jun 18 2014 11:05:52 for BLPAPI 3.8.1 by&nbsp;
+<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.1 </small></address>
+</body>
+</html>

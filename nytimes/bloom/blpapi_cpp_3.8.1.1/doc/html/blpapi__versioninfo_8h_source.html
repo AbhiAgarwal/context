@@ -1,0 +1,303 @@
+<!doctype HTML public "-//W3C//DTD HTML 4.0 Frameset//EN">
+<html>
+<title>BLPAPI C++</title>
+<html>
+<pre>
+/* Copyright 2012. Bloomberg Finance L.P.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the &quot;Software&quot;), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:  The above
+ * copyright notice and this permission notice shall be included in all copies
+ * or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+// blpapi_versioninfo.h                                               -*-C++-*-
+#ifndef INCLUDED_BLPAPI_VERSIONINFO
+#define INCLUDED_BLPAPI_VERSIONINFO
+
+//@PURPOSE: Provide BLPAPI SDK library version information.
+//
+//@CLASSES:
+// blpapi::VersionInfo: basic BLPAPI SDK library version attribute class
+//
+//@DESCRIPTION: This component provides access the BLPAPI SDK library version
+// information.  Each version of the BLPAPI library is identified by four
+// integers: major, minor, patch, and build.
+//
+// The current major version is 3; there is no guarantee of compatibility
+// between different major versions.
+//
+// Differences in minor version numbers indicate significant feature additions.
+// Standard distributions of the BLPAPI have minor version numbers below 128,
+// and higher minor numbers are expected to provide APIs that are a superset of
+// the APIs provided by lower minor version numbers; i.e. all functionality and
+// interfaces supported by BLPAPI 3.7 is also provided by BLPAPI 3.8, while the
+// inverse is not typically true. (Bloomberg occasionally distributes library
+// versions with version numbers above 127; consult the release information
+// distributed with these libraries to determine interoperability with other
+// minor versions.)
+//
+// Increments to patch numbers indicate performance or stability enhancements
+// to the library.
+//
+// Build numbers typically do not carry any information about the library
+// version&#39;s functionality, but can be used along with the other parts of the
+// build number to uniquely identity a precise library binary version (e.g. for
+// the purpose of code signing and auditing).
+//
+///Usage
+///-----
+///C++ usage
+///- - - - -
+// This example logs the BLPAPI version in order to make the logs analysis more
+// productive:
+//..
+//  blpapi::VersionInfo blpapiVersion;
+//  // Client log the library version for reference and future debugging
+//  log(&quot;BLPAPI version: %d.%d.%d.%d&quot;,
+//      blpapiVersion.majorVersion(),
+//      blpapiVersion.minorVersion(),
+//      blpapiVersion.patchVersion(),
+//      blpapiVersion.buildVersion());
+//..
+//
+///C usage
+///- - - -
+// This example logs the BLPAPI version in order to make the logs analysis more
+// productive:
+//..
+//  int majorVersion, minorVersion, patchVersion, buildVersion;
+//  blpapi_getVersionInfo(&amp;majorVersion, &amp;minorVersion, &amp;patchVersion,
+//      &amp;buildVersion);
+//  // Client log the library version for reference and future debugging
+//  log(&quot;BLPAPI version: %d.%d.%d.%d&quot;, majorVersion, minorVersion,
+//      patchVersion, buildVersion);
+//..
+//
+//
+// This example provide shows how to use the backward API signature
+// compatibility macros BLPAPI_SDK_VERSION and BLPAPI_MAKE_VERSION (see
+// blpapi_dispatchtbl.h):
+//..
+//  #if BLPAPI_SDK_VERSION &gt;= BLPAPI_MAKE_VERSION(3, 3, 7)
+//      // Do version 3.3.7 specific stuff here (e.g. adding functions with old
+//      // signature to an array so a client code that was compiled with
+//      // version 3.3.7 will still be able to run using the new version.
+//      ...
+//  #elif BLPAPI_SDK_VERSION ...
+//..
+
+#ifndef INCLUDED_BLPAPI_CALL
+#include &lt;blpapi_call.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_DEFS
+#include &lt;blpapi_defs.h&gt;
+#endif
+
+#ifndef INCLUDED_BLPAPI_VERSIONMACROS
+#include &lt;blpapi_versionmacros.h&gt;
+#endif
+
+#include &lt;string&gt;
+#include &lt;ostream&gt;
+#include &lt;sstream&gt;
+
+#ifdef __cplusplus
+extern &quot;C&quot; {
+#endif // ifdef __cplusplus
+
+BLPAPI_EXPORT
+void blpapi_getVersionInfo(int *majorVersion,
+                           int *minorVersion,
+                           int *patchVersion,
+                           int *buildVersion);
+    // Initialize the 4 parameters with the current release version information
+    // which include the following version parts: Major, Minor, Patch, and
+    // Build.
+
+BLPAPI_EXPORT
+const char *blpapi_getVersionIdentifier();
+    // Return a null-terminated sequence of printable ascii characters (with
+    // values from 0x20 to 0x7e, inclusive) identifying the version of the
+    // blpapi runtime library.  The lifetime of the returned string is
+    // guaranteed until the end of `main()` (but is *not* necessarily usable
+    // during the C++ static destruction phase).
+
+#ifdef __cplusplus
+}
+
+namespace BloombergLP {
+
+namespace blpapi {
+                             // =================
+                             // class VersionInfo
+                             // =================
+class VersionInfo {
+    // This attribute class holds the four integer components of a BLPAPI
+    // version number, provides factory methods to obtain such version numbers
+    // for both the headers used at compile time and the library loaded at run
+    // time, and provides a static function to obtain an opaque version
+    // identifer string for use by Bloomberg support.
+
+  private:
+    // INSTANCE DATA
+    int d_major; // BLPAPI SDK library major version
+    int d_minor; // BLPAPI SDK library minor version
+    int d_patch; // BLPAPI SDK library patch version
+    int d_build; // BLPAPI SDK library build version
+
+    VersionInfo(int major, int minor, int patch, int build);
+        // Create a &#39;VersionInfo&#39; object containing the specified &#39;major&#39;,
+        // &#39;minor&#39;, &#39;patch&#39;, and &#39;build&#39; numbers.
+
+  public:
+    // CREATORS
+    static VersionInfo headerVersion();
+        // Return a &#39;VersionInfo&#39; object containing the version of the BLPAPI
+        // headers against which the client application was compiled.  Note
+        // that the version of the BLPAPI library loaded at runtime may be
+        // different than the version of the headers against which the code was
+        // compiled.
+
+    static VersionInfo runtimeVersion();
+        // Return a &#39;VersionInfo&#39; object containing the version of the BLPAPI
+        // runtime library that is currently running.  Note that the version of
+        // the BLPAPI library loaded at runtime may be different than the
+        // version of the headers against which the code was compiled.
+
+    VersionInfo();
+        // This function is a synonym for &#39;VersionInfo::runtimeVersion()&#39;.
+        // DEPRECATED
+
+    // ACCESSORS
+    int majorVersion() const;
+        // Return the major version number.
+    int minorVersion() const;
+        // Return the minor version number.
+    int patchVersion() const;
+        // Return the patch version number.
+    int buildVersion() const;
+        // Return the build version number.
+
+    static std::string versionIdentifier();
+        // Return a string containing a sequence of printable ascii characters
+        // (with values from 0x20 to 0x7e, inclusive) identifying the version
+        // of the blpapi runtime library.  The format of this string is
+        // unspecified.
+
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream, const VersionInfo&amp; rhs);
+    // Output the specified &#39;rhs&#39; to the specified &#39;stream&#39; in a human-readable
+    // format.  Note that the exact details of this format are not specified
+    // and may be differ between different library versions.
+
+//=============================================================================
+//                         INLINE FUNCTION DEFINITIONS
+//=============================================================================
+
+                             // -----------------
+                             // class VersionInfo
+                             // -----------------
+// CREATORS
+inline
+VersionInfo::VersionInfo(int major, int minor, int patch, int build)
+: d_major(major)
+, d_minor(minor)
+, d_patch(patch)
+, d_build(build)
+{
+}
+
+inline
+VersionInfo VersionInfo::headerVersion()
+{
+    return VersionInfo(BLPAPI_VERSION_MAJOR,
+                       BLPAPI_VERSION_MINOR,
+                       BLPAPI_VERSION_PATCH,
+                       BLPAPI_VERSION_BUILD);
+}
+
+inline
+VersionInfo VersionInfo::runtimeVersion()
+{
+    int major, minor, patch, build;
+    blpapi_getVersionInfo(&amp;major, &amp;minor, &amp;patch, &amp;build);
+    return VersionInfo(major, minor, patch, build);
+}
+
+inline
+VersionInfo::VersionInfo()
+{
+    blpapi_getVersionInfo(&amp;d_major, &amp;d_minor, &amp;d_patch, &amp;d_build);
+}
+
+// ACCESSORS
+inline
+int VersionInfo::majorVersion() const
+{
+    return d_major;
+}
+
+inline
+int VersionInfo::minorVersion() const
+{
+    return d_minor;
+}
+
+inline
+int VersionInfo::patchVersion() const
+{
+    return d_patch;
+}
+
+inline
+int VersionInfo::buildVersion() const
+{
+    return d_build;
+}
+
+inline
+std::string VersionInfo::versionIdentifier()
+{
+    std::ostringstream oss;
+    oss &lt;&lt; &quot;blpapi-cpp; headers &quot;
+        &lt;&lt; headerVersion()
+        &lt;&lt; &quot;; runtime &quot;
+        &lt;&lt; runtimeVersion();
+    if (BLPAPI_CALL_AVAILABLE(blpapi_getVersionIdentifier)) {
+        oss &lt;&lt; &#39;-&#39; &lt;&lt; BLPAPI_CALL(blpapi_getVersionIdentifier)();
+    }
+    return oss.str();
+}
+
+inline
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; stream, const VersionInfo&amp; rhs)
+{
+    return stream &lt;&lt; rhs.majorVersion() &lt;&lt; &#39;.&#39;
+                  &lt;&lt; rhs.minorVersion() &lt;&lt; &#39;.&#39;
+                  &lt;&lt; rhs.patchVersion() &lt;&lt; &#39;.&#39;
+                  &lt;&lt; rhs.buildVersion();
+}
+
+}  // close namespace blpapi
+}  // close namespace BloombergLP
+
+#endif // ifdef __cplusplus
+
+#endif // INCLUDED_BLPAPI_VERSIONINFO
+</pre>
+</body>
+</html>

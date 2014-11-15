@@ -1,0 +1,747 @@
+Version 3.8.1:
+==============
+- Record receipt time for messages
+	The SDK now provides an interface, 'blpapi::Message::timeReceived' for
+	interrogating the time at which a message was received and processed by
+	the library. In conjunction with the new 'blpapi_highprecisionclock'
+	component and 'blpapi_timepoint' interfaces, this provides the facility
+	for clients to measure the amount of time each message spends in the
+	client event queue. For performance reasons, receipt times are *not*
+	recorded for subscription data messages by default; clients can use the
+	'SessionOptions::recordSubscriptionDataReceiveTimes' setting to request
+	receipt times for all messages.
+
+- External include guards for standard library removed
+	Prior versions of the SDK headers used preprocessor macros to avoid multiple
+	inclusion of standard library headers. Because the names of these macros
+	could cause conflicts with macros in client code, that (small) optimization
+	to compilation speed has been removed.
+
+- Send host identification information during session establishment
+	In order to support usage auditing, BLPAPI will report the host name and
+	IP address (non-NAT) used for establishing the session with the Bloomberg
+	infrastructure.
+
+- Stability improvements
+
+Version 3.8.0:
+==============
+- Service-level failover
+	When a session has multiple connections and a service becomes unavailable
+	on one connection (and a 'ServiceDown' message is added to the event
+	queue) outstanding requests and subscriptions for that service (only) will
+	now be automatically migrated to a connection where the service is
+	available (and a 'ServiceUp' message will be added to the event queue), if
+	such a connection exists. Note that this can result in a single session
+	using multiple connections simultaneously for different services.
+
+- Additional information in 'ServiceUp' and 'ServiceDown' messages
+	The 'ServiceUp' and 'ServiceDown' messages have been extended with
+	detailed information about which parts of the service have become
+	(un)available.
+
+- Authorization token uses display IP address when a remote display is in use
+	When a blpapi application is being executed in a Citrix
+	(XenApp/XenDesktop) environment, the 'Session::generateToken'
+	function now uses the "display IP address" to identify where the
+	application is running, instead of using the physical IP address
+	as reported by the operating system. This enables applications
+	using BPS permissioning to be run remotely (even in virtual
+	environments) as long as they are using the same display as a
+	Bloomberg terminal. This feature supports only a single level of
+	remoting: if an application is running on machine A which has a
+	remote display on machine B and machine B has a remote display on
+	machine C, 'Session::generateToken' will generate a token for
+	authorization on machine B.
+
+- Addition of testing interface for logging system
+	A 'blpapi::Logging::logTestMessage' function has been added to allow
+	clients to test the library's logging configuration, and the functionality
+	of registered logging callbacks.
+
+- Extended version identifier interfaces
+	The library now offers 'VersionInfo::headerVersion()' and
+	'VersionInfo::runtimeVersion()` interfaces to allow client applications to
+	separately report which version of the library they were compiled against,
+	and which version of the library was actually loaded using symmetric
+	interfaces. (Previously, clients were forced to read header macros directly
+	to detect header versions.) Further, the 'VersionInfo::versionIdentifier()'
+	interface has been added, to allow more fine-grained release tracking
+	information for Bloomberg support.
+
+- Stability improvements
+
+Version 3.7.6:
+==============
+- Stability improvements
+
+Version 3.7.5:
+==============
+- Stability improvements
+
+Version 3.7.4:
+==============
+- Stability improvements
+
+Version 3.7.3:
+==============
+- Stability improvements
+
+Version 3.7.2:
+==============
+- Stability improvements
+
+Version 3.7.1:
+==============
+- Stability improvements
+
+Version 3.7.0:
+==============
+- Publisher topic resolution
+	Services can be configured such that when a provider creates new topics via
+	'ProviderSession:createTopics' using a topic string, that topic string will
+	first be sent to a resolver for resolution. Note that topics created via
+	'TopicSubscribed' and 'ResolutionResult' messages (instead of topic strings)
+	will not undergo resolution.
+
+- Providers can delete topics
+	The new 'ProviderSession::deleteTopic*' interfaces allow publishers to
+	free the resources associated with topics created using
+	'ProviderSession::createTopic*'. See 'blpapi_providersession' for details.
+
+- Support service deregistration
+	Providers can now de-register services. When a registered service is
+	de-registered, all topics are deleted, all subscriptions and pending
+	requests are cancelled (and routed by the infrastructure to other providers,
+	if available), and a ServiceStatus event containing a ServiceDeregistered
+	message is delivered to the provider. When a service whose registration is
+	pending is deregistered, the registration is cancelled and a ServiceStatus
+	event containing a ServiceRegisterFailure message is delivered to the
+	provider.
+
+- Add sub-service code support
+	Publishers can now collaborate with resolvers to route subscription
+	requests based on "sub-service codes", which are integer identifiers
+	between 0 and 2**24. Publishers can advertise the set of sub-service
+	codes they support (and their priority relative to other publishers for
+	each sub-service code) either at the time the service is registered
+	(via 'ServiceRegistrationOptions::addSubServiceCodeRange') or
+	dynamically over the lifetime of the publisher (via
+	'ProviderSession::activateSubServiceCodeRange' and
+	'ProviderSession::deactivateSubServiceCodeRange'). In responding to a
+	resolution request, a resolver can set the 'subServiceCode' element of
+	the 'PermissionResponse', and the subscription request will be routed
+	only to a publisher that has advertised that particular sub-service
+	code.
+
+- Support pub-sub contribution services
+	This SDK supports contribution services that have been configured to use the
+	publication protocol for each contributed tick. Existing services (that
+	use the request-response protocol for contributed ticks) are unaffected.
+
+- Fine-grained service registration
+	Support is provided for separate registration of the publication,
+	operations (request-response), and resolution components of a service.
+	This provides to ability to, for example, write a publisher and its
+	corresponding resolver as entirely separate applications running in
+	different processes (and different machines). See
+	'ProviderSession::RegistrationParts' and
+	'ServiceRegistrationOptions::setPartsToRegister' for further details.
+
+- Report errors when attempting to publish the same field multiple times
+	The documentation for 'EventFormatter' has always specified undefined
+	behavior if clients attempt to set the same field in a tick multiple
+	times. Previous versions of the library would silently allow such usage
+	(with unspecified semantics for which value would be published).
+	'EventFormatter' will now detect and report most instances of this type
+	of misuse.
+
+- Diagnostics for unrepresentable date-times
+	The date-time fields specified by some services and schemas permit only
+	date-time values that occurred after '1970/01/01T00:00:00.000'. Misuse
+	of such fields has been made easier to detect within publishers.
+
+- 'blpapi::FieldNotFoundException' has been deprecated
+	The 'blpapi::FieldNotFoundException' class has been deprecated and users are
+	expected to catch the more generic 'blpapi::NotFoundException'.
+
+- Drop support for V2 platform
+	The SDK no longer supports publishing to Platform versions before 3.0.0.
+
+- New connection strategy when multiple hosts are provided
+	The SDK now initiates connections to all provided hosts when a session is
+	started, instead of waiting for loss of the primary connection to connect
+	to another host for failover.
+
+- 'blpapi::EventHandler' destructor is now virtual
+	Instances of 'blpapi::EventHandler' subclasses can now be safely destroyed
+	via base class pointers.
+
+- Stability improvements
+
+Version 3.6.7:
+==============
+- Stability improvements
+
+Version 3.6.5:
+==============
+- Stability improvements
+
+Version 3.6.4:
+==============
+- Topic strings can be marked as not requiring resolution
+	Clients with access to fully-resolved topic strings can now use the
+	'SubscriptionList::addResolved' family of functions to advise the
+	Bloomberg infrastructure that such topics do not require resolution. It
+	is at the discretion of the infrastructure whether or not such advice
+	actually allows avoidance of the resolution phase of subscription.
+
+- New interface to access diagnostics information on the blpapi library
+	A new 'DiagnosticsUtil::memoryInfo' function is exposed to provide access
+	to platform-specific memory diagnostics.  The format of the information
+	provided by this call is currently unspecified and is intended for internal
+	use only.
+
+- New session option to disable keep-alive mechanism
+	Clients can now use the 'SessionOptions::setKeepAliveEnabled' function
+	to disable or enable a session's keep-alive mechanism.  In addition,
+	the 'SessionOptions::keepAliveEnabled' function can be used to query
+	the enabled state of the keep-alive mechanism.
+
+Version 3.6.3:
+==============
+- Linux library memory model optimization
+	Prior versions of the Linux library were built using the static TLS
+	memory model; this version now uses the dynamic TLS memory model.
+
+- RedistributeWithAuthExample added
+	A new example has been added to demonstrate how to write an application
+	to redistribute data based on authorization information.
+
+- Stability improvements
+
+Version 3.6.2:
+==============
+- Publishers can clear internal cached values
+	This version adds support to allow publishers to publish null values
+	by calling 'EventFormatter::setElementNull'. Publishing null clears any
+	value for that field currently cached by the data distribution
+	platform.
+
+- Stability improvements
+
+Version 3.6.1:
+==============
+- Stability improvements
+
+Version 3.6.0:
+==============
+- 'Name' ordering and hashing
+	The comparator for 'Name', the SDK's wrapper around constant strings,
+	has been significantly optimized, and the interface has been extended
+	with additional comparators and hashing support. The contract for
+	'operator<(const Name&, const Name&)' has always warned that the
+	ordering used does not necessarily correspond with any typical string
+	ordering (e.g.  that used by 'strcmp'), and that the actual ordering
+	used may vary from process to process. Prior SDK versions did, in fact,
+	use the same ordering as 'strcmp', however that is no longer the case.
+
+- Demonstrate a valid behavior on DataLoss
+	Sample implementation of application processing DataLoss message added
+	to SubscriptionWithEventHandlerExample. Note that this behavior may not
+	be the most appropriate behavior for your application.
+
+- Timezone fields no longer automatically filled
+	Clients of services which published datetime fields with no time zone
+	information previously received those fields with the time zone set to
+	UTC; this behavior has been disabled. Publishers continue to have time
+	zone set to UTC for data they send if no time zone is present, although
+	this behavior is deprecated and publishers are encouraged to explicitly
+	set the time zones of published dates, times, and datetimes to UTC.
+
+- SecurityLookupExample added
+	A new example has been added to demonstrate the use of the ticker
+	lookup service, '//blp/instruments'.
+
+- Resubscribe with resubscription ID
+	One more method in Session is provided to support resubscription with
+	a user-specified resubscription ID. This resubscription ID appears in
+	the subscription status messages('SubscriptionStarted' and
+	'SubscriptionFailure') associated with this resubscription request,
+	differentiating them from status messages for other resubsubscriptions
+	and from status messages from the initial subscription.
+
+- Clarification of Datetime documentation
+	Guarantees about the parts set by various functions have been provided.
+	The semantics of comparator functions have also been clarified.
+
+- Additional Datetime convenience functions
+	A full set of 'create*' named constructors have been added. These should
+	eliminate the need for users to set individual parts of a Datetime object,
+	reducing the chance of misuse.
+
+- Datetime no longer considers 24:00:00 a valid time
+	Prior library versions provided limited functionality for values with time
+	24:00:00.0; that time is now considered invalid as reported by
+	'Datetime::isValidTime'.
+
+- Stability improvements
+
+Version 3.5.2:
+==============
+- Stability improvements
+
+Version 3.5.1:
+==============
+- Stability improvements
+
+Version 3.5.0:
+==============
+- High-precision time
+	The blpapi::Datetime type has been extended with support for
+	receiving high-precision fractional seconds, with accessors for the
+	fraction-of-second as milliseconds, microseconds, nanoseconds, and
+	picoseconds, with these accessors ignoring/truncating higher-resolution
+	parts as necessary. The C interface has been similarly extended with a
+	new struct carrying picosecond-resolution data. High-precision times
+	can be retrieved from blpapi_Element_t objects using the C interface
+	by replacing calls to blpapi_Element_*Datetime with calls to
+	blpapi_Element_*HighPrecisionDatetime. The C++ interface handles
+	high-precision temporal types transparently.
+
+- Datetime comparison functions updated
+	Previous versions of the datetime comparison functions provided defined
+	behavior only for full date-times (with all parts set). Datetime
+	comparisons are now provided for any two datetime values, although the
+	actual ordering for incompatible datetimes is unspecified. This may
+	alter comparison results for clients relying on the previously
+	unsupported behavior.
+
+- Setting Datetime blpapi::Element objects respects schema
+	When assigning the value of a blpapi::Element with a schema type of
+	Date or Time, only those parts relevant to the schema type are stored.
+
+- blpapi::Element conversions between Datetime and string
+	Reading and assigning a blpapi::Element with a date, time, or
+	datetime schema type as a string has been updated to work consistently
+	across the types and without loss of information (which should now
+	allow round-tripping). In cases where the previous behavior was
+	technically undefined (including dates with time zone offset
+	information) the string format may be different than in previous
+	versions.
+
+- Datetime print method
+	The C/C++ printing methods for Datetime types have been changed to use
+	iso8601 format (as used by the blpapi::Element conversions between
+	strings and Datetime objects, and by the Java and C# versions of
+	BLPAPI). This also eliminates issues related to printing negative time
+	zone offsets.
+
+- Added variety of new constructors for class Datetime
+	A variety of new constructors are now available for creating a Datetime
+	object from different combination of the Datetime parts.
+
+- Change default SessionOptions maxEventQueueSize
+	Changed the default value of maxEventQueueSize in SessionOptions to
+	10000 as previously documented.
+
+- Removing the class InvalidConverstionException
+	Affected users should use InvalidConversionException instead of
+	InvalidConverstionException.
+
+- Deliver DataLoss when library drops events
+	The library drops events when the number of events outstanding for
+	delivery exceeds the specified threshold controlled by SessionOptions
+	maxEventQueueSize.
+
+	A new ADMIN message of type DataLoss will be delivered to notify the
+	client about lost data. The correlationID property attached to the
+	DataLoss message identifies the affected subscription.
+
+- Stability improvements
+
+Version 3.4.8:
+==============
+- Stability improvements
+
+Version 3.4.7:
+==============
+- Stability improvements
+
+Version 3.4.6:
+==============
+- Support fragmented messages
+	Users can call Message::fragmentType() to determine if a message is a
+	fragment of a larger message. Most messages won't be fragmented so the
+	above method will return FRAGMENT_NONE. Consuming application should be
+	prepared to receive a FRAGMENT_START before receiving FRAGMENT_END
+	in which case previously received message fragments (start and any
+	intermediate fragments) should be discarded.
+
+- Per-connection authorization implemented inside the library
+	Applications are no longer required to send an authorization request
+	per each backend they intend to use. This functionality is now provided
+	by the library.
+
+- Introduce new dead peer detection mechanism
+	The new functionality is controlled by two parameters: inactivity time
+	and response timeout. Inactivity time controls the amount of time
+	without any read activity on the connection before the library will ping
+	the peer. The peer will be declared "dead" if ping response (or other
+	data) is not received within response timeout interval after the ping.
+	The behaviour can be controlled using following SessionOption
+	properties:
+	        DefaultKeepAliveInactivityTime
+	        DefaultKeepAliveResponseTimeout
+	This feature is only available if connected to a compatible server.
+
+- Limit un-bounded memory growth for slow consuming applications
+	Users can now limit the number of events that blpapi can hold before
+	applications accept these incoming events (maxEventQueueSize).
+	The library will drop subsequent events received over the network if
+	it already has the specified 'maxEventQueueSize' number of events
+	outstanding for delivery.
+
+	Added two new message types to AdminEvents event type:
+	SlowConsumerWarning and SlowConsumerWarningCleared.
+
+	The library will generate 'SlowConsumerWarning' message when the
+	pending events reach 'close' to specified maxEventQueueSize. A
+	SlowConsumerWarningCleared notification will be sent to the
+	application when the count of pending events drops 'sufficiently
+	lower' than the specified 'maxEventQueueSize'.
+
+	The behaviour can be controlled using following methods of
+	SessionOptions class:
+	        setMaxEventQueueSize(size_t)
+	        setSlowConsumerWarningHiWaterMark(float)
+	        setSlowConsumerWarningLoWaterMark(float)
+
+- Rename class InvalidConverstionException to InvalidConversionException
+	A compatibility fix is currently in place, so old code won't break
+	right away, but affected users should make the change as soon as
+	possible.
+
+- PagePublisherExample now supports Permission Requests.
+
+- ContributionsPageExample can publish on user specified topic
+	In ContributionsPageExample, users can specify the topic to publish
+	using the "-t" option at command line.
+
+- Stability improvements
+
+Version 3.4.5:
+==============
+- Support multiple simultaneous active connections to backend servers
+	ProviderSession.registerService request will announce published
+	services through all connected backends. A new SERVICE_STATUS message
+	was introduced: ServiceAvailabilityInfo to inform the publishing
+	application about the current list of backends that carry their
+	service.
+
+	Applications will be required to send an authorization request per
+	each backend they intend to use (it's recommended to send as many as
+	the number of configured backends)
+
+- Support publishing request/response services
+	Publishing applications can now register to publish interactive
+	services: requests from clients will be routed to such publishers, who
+	would create a response with Service.createResponseEvent() and send it
+	back with ProviderSession.sendResponse(). Included
+	RequestServiceExample demonstrates an implementation of both client
+	and server applications.
+
+- Support user-provided sequence numbers
+	The presence of sequence numbers in published events will enable a
+	seamless (data loss free) failover in case of a publisher loss.
+
+	EventFormatter was extended with new overloads for appendMessage() and
+	appendRecapMessage() which take a sequence number as one of the
+	arguments where added to allow publishers insert sequence numbers into
+	message they publish.
+
+- Expose more EMRS information to users
+	Added userName, appName, serviceName and deviceAddress to permission
+	request.
+
+- Topic-level permissioning
+	Publishers can report the list of EIDs and the permissioning service
+	information per Topic in PermissionResponse (in a response to
+	PermissionRequest sent by Platform on behalf of a subscriber). The
+	Platform will continuously monitor entitlements of that subscriber to
+	ensure eligibility to receive the data on the Topic. In case the
+	permissions of the subscriber make him ineligible, the Platform will
+	terminate that subscription.
+
+- New interface header file blpapi_sessionoptions.h
+	blpapi::SessionOptions class moved into a separate header file -
+	blpapi_sessionoptions.h. This change is expected to be completely
+	transparent for all users.
+
+- Stability improvements
+
+Version 3.4.4:
+==============
+- Restart bbcomm if necessary in failover
+	This change corrects a regression introduced in 3.4.0: now bbcomm.exe
+	task will be started (if it's down) before attempting to connect to
+	its port on every connection attempt, not just once on startup
+
+- Stability improvements
+
+Version 3.4.3:
+==============
+- Simplify configuration of "DefaultTopicPrefix" session option
+	The library will be more flexible accepting values for
+	"DefaultTopicPrefix" stripping and adding leading and trailing '/'
+	symbols as necessary
+
+- Connection timeout configurable via SessionOptions
+	The default connection timout changed to be 5 sec. Users can change
+	that value using SessionOptions::setConnectTimeout().
+
+- Stability improvements
+
+Version 3.4.2:
+==============
+- Stability release
+
+Version 3.4.1:
+==============
+- Support concurrent openService & registerService operations
+	Multiple ProviderSession::openService() & ProviderSession::registerService()
+	operations can run concurrently. Either if started explicitly or
+	implicitly via ProviderSession::resolve(), ProviderSession::createTopics(),
+	and Session::subscribe() calls.
+
+- More detailed error messages
+	Report more detailed information in many more error cases.
+
+- Differentiate log messages based on session id in the log file
+	When a single process has more than one active session, log messages coming
+	from different sessions are tagged with the session id.
+
+- Added comparison operators and << operator support to Datetime type
+	The type Datetime now support all comparison operators: ==, !=, <, <=, >,
+	and >=. Also, support for operator<< was added, as well as the function
+	Datetime::print.
+
+- ProviderSession::getTopic does not throw on TopicSubscribed/TopicUnsubscribed
+	ProviderSession::getTopic(const Message&) does not throw an
+	InvalidArgumentException anymore if the Message::messageType() is
+	TopicSubscribed or TopicUnsubscribed. This is not considered as an error
+	case anymore since it is a valid state that a provider will receive an
+	event for TopicSubscribed/TopicUnsubscribed for a topic that does not yet
+	exist in the provider session.
+
+- InvalidArgumentException was thrown instead of InvalidStateException
+	In some cases of accessing the Session object while it was in an invalid
+	state, BLPAPI incorrectly threw InvalidArgumentException instead of
+	InvalidStateException.
+
+- Unused ExceptionUtil::ExceptionClass enum removed
+	The enum ExceptionUtil::ExceptionClass is not used, thus it was removed
+	from the API.
+
+- More accurate ResolutionList::Status enum
+	Now ProviderSession::resolve and ProviderSession::resolveAsync sets a more
+	accurate Status enum value for each entry in the ResolutionList.
+
+Version 3.4.0:
+==============
+- All new ProviderSession, independent from Session:
+	Initial publishing implementation offered ProviderSession which was a
+	subclass of Session. Thus it was possible to do subscriptions on
+	ProviderSession. It's no longer the case: ProviderSession and Session
+	are no longer related; new classes provide a true "writer" and "reader"
+	interfaces respectively. New session classes share a common base -
+	AbstractSession, which defines interfaces for session control, and
+	user authorization.
+
+- Multiple publisher support:
+	Multiple publishers for the same feed/topic are now supported, providing
+	redundancy/fan-in services.
+	- Publisher group ID: When registering a service you now can specify
+	  a group ID. If not specified, each provider session will have a
+	  unique group ID (default behavior). The group ID is used for
+	  clustering together a set of service publishers.
+	  The group ID controls the behavior of the multiple publishers. Using
+	  the same group ID for a set of publishers you can provide redundancy
+	  between the publishers. Using a different group IDs users can
+	  implement publisher fan-in (for the same or different topics).
+
+	- Redundancy: When publishers are registered with the same group ID, the
+	  platform will manage the list of publishers and will activate the
+	  feed from only one of them at any given time.
+	  In order to support this feature two new TOPIC_STATUS messages exist:
+	  TopicActivated & TopicDeactivated.
+	  A publisher should start publishing on a given topic only after a
+	  TopicActivated message has been received. When a publisher receives
+	  the TopicDeactivated notification message, it should stop publishing
+	  on the topic.
+	  All information that is streamed from a publisher before it received
+	  the TopicActivated message, or after it received the
+	  TopicDeactivated message will be discarded by the platform.
+	  Publishers on the same group are required to publish identical tick
+	  streams.
+
+	- Topic fan-in: Data streams from publishers with different group IDs
+	  will be combined into one stream toward the subscribers. It's up to
+	  the publishers to make sure that different group IDs will not
+	  publish redundant information.
+	  Setting the group ID:
+	  ...
+	  ServiceRegistrationOptions options;
+	  char *groupID = "SomeGroupID";
+	  options.setGroupId(groupID, strlen(groupID));
+	  providerSession.registerService(serviceName, identity, options);
+	  ...
+
+	- The binary interface (C)
+	  blpapi_ProviderSession_registerService[Async] has changed. The
+	  source interface (C++) has not changed but requires recompilation.
+
+- Failover support for both publisher- and subscriber-type clients
+	A session can be provided with a list of platform servers. Depending
+	on the session configuration, if the platform server goes down the
+	session will try to reconnect to the next platform server in the list.
+	By default, the auto restart option is disabled, to enable it do:
+	...
+	SessionOptions options;
+	options.setAutoRestartOnDisconnection(true);
+	ProviderSession session(options, &myEventHandler, 0);
+	...
+
+	Users should expect that sometimes (the worst case scenario) the
+	library might not be able to failover some published services or topics
+	to the backup system and will notify the user with
+	ServiceFailoverError and TopicFailoverError messages as appropriate.
+
+- Topic creation/resolution:
+	The API blpapi_ProviderSession_createTopic/ProviderSession::createTopic
+	has been deprecated.
+
+	Topic resolution and management has moved from the library to the
+	platform server, thus each time the library is trying to resolve or
+	create a topic a message is sent to the platform. In order to save in
+	bandwidth and response time the new API supports creation of multiple
+	topics in a single call.
+
+	Once a topic has been created it is cached by the library (in the
+	process memory). In order to get a reference to a cached instance
+	using a message object, the API blpapi_ProviderSession_getTopic/ProviderSession::getTopic
+	was introduced.
+
+	In order to maintain backward compatibility, the deprecated API
+	createTopic can still be used, but it assumes that the topic object
+	was previously resolved & created using either createTopics API. In
+	"compat33x" mode it's sufficient to call
+	ProviderSession::resolve[Async] which does both resolving and topic
+	creation with the platform. As a result, the createTopic API is now a
+	local call (i.e. the library does not interact with the platform).
+
+	When creating a topic using either createTopics API or
+	resolve/createTopics API, the library generates the following events
+	to the client in case of a successful operation:
+	- RESOLUTION_STATUS event with ResolutionSuccess message
+	- TOPIC_STATUS event with TopicCreated and TopicActivated (or
+	  TopicDeactivated, if the provider was not elected primary for the
+	  group) messages.
+
+- Topic recap:
+	A topic recap message, is a message generated by the client
+	application and should include ALL the current information for the
+	topic (the platform cache will get reset to whatever values came in
+	the recap message, empty fields will clear cache values; that's
+	different from a regular tick where absent field values mean "no
+	change"). There are two logical types of a topic recap message:
+
+	- Solicited topic recap message: The platform server can decide that
+	  the information it has stored in cache is not valid anymore, in that
+	  case the publisher will receive a TOPIC_STATUS event with TopicRecap
+	  message. The message will include a correlation ID that should be
+	  incorporated into the Topic recap response.
+	...
+	Topic topic = session->getTopic(msg);
+	CorrelationId cid = msg.correlationId();
+	Event event = service.createPublishEvent();
+	EventFormatter eventFormatter(event);
+	eventFormatter.appendRecapMessage(topic, &cid);
+	...
+
+	- Unsolicited topic recap message:
+	  The client application can decide on its own (based on its own
+	  internal logic) to send a recap message to the platform. Sending a
+	  topic recap message is done the same way as sending a regular update
+	  message, with two changes: When appending a message to the event,
+	  you should use the appendRecapMessage method (vs the appendMessage)
+	  of the EventFormatter and, all fields of the topic recap message
+	  should be filled. The code fragment below demonstrates sending a
+	  recap message:
+	...
+	Event event = service.createPublishEvent();
+	EventFormatter eventFormatter(event);
+	eventFormatter.appendRecapMessage(topic, 0);
+	...
+
+- Initial paint events:
+	Publishing applications implementing "initial paint" functionality
+	must do that by sending a recap message as descibed above; formatting
+	these events with EventFormatter::appendMessage() is not supported. The
+	recap will be requested by the platform if the service's metadata
+	specifies that publishers supports recaps (see discussion on solicited
+	topic recap messages above). Otherwise publishers can provide the
+	"initial paint" by sending an unsolicited recap of the topic in
+	response to TopicActivated notification.
+
+- dynamically updating entitlements in Identity
+	Authorization request no longer completes when Identity is authorized,
+	AuthorizationSuccess message will arrive in a PARTIAL_RESPONSE event.
+	The authorization request will remain outstanding delivering
+	entitlements updates.
+
+- full 64-bit OS support on Windows/Linux/SunOS
+	We'll distribute blpapi libraries built for 64-bit operating
+	environment.  BBCOMM will be autostarted in DAPI mode from 64-bit
+	Java/C# applications on Windows platform with assistance of native
+	64-bit library blpdapisup_64.dll.
+
+- Identity extended to include user's "seat" type
+	An authorized Identity object can detail whether the authenticated
+	user is a BLP Professional Service user or not.
+
+- PermissionRequest extended to support non-user subscribers
+	PermissionRequest message have been extended to supply "seat" type
+	information of the subscriber and application ID (if subscriber used
+	application authentication).
+
+- support custom loggers
+	BLPAPI now supports logging through customer-provided logging callback.
+
+- connection up/down notifications
+	Added two new message types to SessionStatus event type:
+	SessionConnectionUp and SessionConnectionDown. This way the lifetime
+	of the connection to the backend server and the lifetime of the
+	session can be reported independently as connections to backend can
+	drop/recover without having the library terminate the session.
+
+- removal of blpapi_sessionparameters.h
+	blpapi_sessionparameters.h is being removed. All the uses related to
+	SessionParameters or blpapi_SessionParamaters_* are to be switched with
+	SessionOptions or blpapi_SessionOptions_* in blpapi_abstractsession.h.
+
+- CorrelationId constructors marked "explicit"
+	The following two CorrelationId constructors have been marked
+	"explicit" to prevent their unexpected use in implicit type
+	conversions (see ISO/IEC 14882-2003: Programming Languages -- C++,
+	Second Edition, 2003, Section 12.3.1, "Conversion by constructor").
+	Such implicit conversions may be unexpected, and lead to undesirable
+	behavior.
+	- CorrelationId::CorrelationId(long long, int = 0)
+	- CorrelationId::CorrelationId(void *, int = 0)
+
+Version 3.3.11:
+===============
+- Identity extended to include user's "seat" type
+	An authorized Identity object can detail whether the authenticated
+	user is a BLP Professional Service user or not.
