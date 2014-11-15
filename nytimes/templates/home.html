@@ -1,14 +1,80 @@
-<!doctype html>
-{% if article %}
-	<title>{{ article['headline']['print_headline']|safe }}</title>
-	<h1>{{ article['headline']['print_headline']|safe }}</h1>
-	<p>Summary: {{ article['snippet']|safe }}</p>
-	<p>Definition: </p>
-	<ul>
-		{% for eachKeyword in article['keywords'] %}
-			<li> {{ eachKeyword['definition'] }} </li>
-		{% endfor %}
-	</ul>
-	<p>Timeline: </p>
-	<p>Article: {{ article['allText']|safe }}
-{% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="stylesheet" href="http://localhost:5000/static/style.css">
+	<link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+	<link rel="stylesheet" href="http://localhost:5000/static/bootstrap-image-gallery.min.css">
+</head>
+<body>
+	{% if article %}
+		<title>{{ article['headline']['main']|striptags|safe }}</title>
+		<div class="panel-body">
+			<h2>{{ article['headline']['main']|safe }}</h2>
+			<p class="lead">Summary</p> 
+				<p>{{ article['snippet']|safe }}</p>
+			<p class="lead">Definition</p>
+			<ul>
+				{% for eachKeyword in article['keywords'] %}
+					<li> {{ eachKeyword['definition'] }} </li>
+				{% endfor %}
+			</ul>
+			{% if article['multimedia'] %}
+				<p class="lead">Images</p>
+				<!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
+				<div id="blueimp-gallery" class="blueimp-gallery">
+				    <!-- The container for the modal slides -->
+				    <div class="slides"></div>
+				    <!-- Controls for the borderless lightbox -->
+				    <h3 class="title"></h3>
+				    <a class="prev">‹</a>
+				    <a class="next">›</a>
+				    <a class="close">×</a>
+				    <a class="play-pause"></a>
+				    <ol class="indicator"></ol>
+				    <!-- The modal dialog, which will be used to wrap the lightbox content -->
+				    <div class="modal fade">
+				        <div class="modal-dialog">
+				            <div class="modal-content">
+				                <div class="modal-header">
+				                    <button type="button" class="close" aria-hidden="true">&times;</button>
+				                    <h4 class="modal-title"></h4>
+				                </div>
+				                <div class="modal-body next"></div>
+				                <div class="modal-footer">
+				                    <button type="button" class="btn btn-default pull-left prev">
+				                        <i class="glyphicon glyphicon-chevron-left"></i>
+				                        Previous
+				                    </button>
+				                    <button type="button" class="btn btn-primary next">
+				                        Next
+				                        <i class="glyphicon glyphicon-chevron-right"></i>
+				                    </button>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+				<div id="links">
+					{% for eachImage in article['img'] %}
+						{% if eachImage != "http://graphics8.nytimes.com/images/multimedia/10x10.gif" %}
+						<a href="{{eachImage}}" title="Banana" data-gallery>
+							<img src="{{eachImage}}" height="100px" width="100px" alt="">
+						</a>
+						{% endif %}
+					{% endfor %}
+				</div>
+			{% endif %}
+			<p class="lead">Timeline</p>
+			{% if article['type_of_material'] == "News" %}
+				<p class="lead">Article</p>
+					<p>{{ article['allText']|safe }}</p>
+			{% endif %}
+		</div>
+	{% endif %}
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
+	<script src="http://localhost:5000/static/bootstrap-image-gallery.min.js"></script>
+</body>
+</html>

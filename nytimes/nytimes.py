@@ -2,9 +2,9 @@ import re, requests, json, urllib2, wikipedia
 from nytimesarticle import articleAPI
 from bs4 import BeautifulSoup
 from cookielib import CookieJar
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, url_for
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 NYTimes_API_KEY = 'ca470e1e91b15a82cc0d4350b08a3c0b:14:70189328'
 
 def getArticle(url):
@@ -14,6 +14,7 @@ def getArticle(url):
 	mainPagesoup = BeautifulSoup(mainPage.text)
 	title = mainPagesoup.find("h1")
 	p = mainPagesoup.find_all("p")
+	img = mainPagesoup.find_all("img")
 
 	# Use API to get keywords, etc.
 	api = articleAPI(NYTimes_API_KEY)
@@ -23,8 +24,12 @@ def getArticle(url):
 	# Article text Engine
 	allText = ''
 	for eachSelection in p:
-		allText += (eachSelection.getText() + '\n')
+		allText += (eachSelection.getText() + '<br><br>')
+	allImages = []
+	for eachImage in img:
+		allImages.append(eachImage['src'])
 	currentArticle['allText'] = allText
+	currentArticle['img'] = allImages
 
 	# Definition Engine
 	for eachKeyword in range(0, len(currentArticle['keywords'])):
