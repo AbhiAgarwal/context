@@ -71,37 +71,61 @@
 				</div>
 			{% endif %}
 			<p class="lead">Timeline</p>
-			<p class="lead">Semantic Analysis</p>
-			<div id="chart_container">
-				<div id="chart" class="rickshaw_graph"></div>
-				<div id="legend_container">
-				      <div id="smoother" title="Smoothing"></div>
-				      <div class="rickshaw_legend" as="">
-				         <ul>
-				            <li class="line">
-				               <div class="swatch" style="background-color: rgb(255, 102, 0);"></div>
-				               <span class="label">Location Sentiment</span>
-				            </li>
-				            <li class="line">
-				               <div class="swatch" style="background-color: rgb(0, 132, 180);"></div>
-				               <span class="label">Article Sentiment</span>
-				            </li>
-				         </ul>
-				      </div>
-				</div>
-			</div>
-			{% if article['type_of_material'] == "News" %}
-			<p class="lead">Article</p>
-				<p>{{ article['allText']|safe }}</p>
-			{% endif %}
+			<table style="width:100%">
+				<tr>
+					<td>
+						<p class="lead">Semantic Analysis</p>
+						<div id="chart_container">
+							<div id="chart" class="rickshaw_graph"></div>
+							<div id="legend_container">
+							      <div id="smoother" title="Smoothing"></div>
+							      <div class="rickshaw_legend" as="">
+							         <ul>
+							            <li class="line">
+							               <div class="swatch" style="background-color: rgb(255, 102, 0);"></div>
+							               <span class="label">Location Sentiment</span>
+							            </li>
+							            <li class="line">
+							               <div class="swatch" style="background-color: rgb(0, 132, 180);"></div>
+							               <span class="label">Article Sentiment</span>
+							            </li>
+							         </ul>
+							      </div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						{% if article['type_of_material'] == "News" %}
+						<div>
+						<p class="lead">Article</p>
+							<p>{{ article['allText']|safe }}</p>
+						</div>
+						{% endif %}
+					</td>
+				</tr>
+			</table>
 		</div>
 	{% endif %}
+	<div>
+		{% if article['bloombergData'] %}
+			{% for eachBloom in article['bloombergData'] %}
+				<p>{{eachBloom}}</p>
+			{% endfor %}
+		{% endif %}
+	</div>
+
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
 	<script src="http://localhost:5000/static/bootstrap-image-gallery.min.js"></script>
 	<script type="text/javascript" src="http://localhost:5000/static/d3.v3.js"></script>
 	<script type="text/javascript" src="http://localhost:5000/static/rickshaw.js"></script>
+	
 	<script>
+
+	var bloombergData = [];
+	var aNumber = 0;
 
 	var location_sentiment = [{"x" : 0, "y": 20}, {"x" : 5, "y" : 45}, {"x" : 10, "y":65}];
 	var tweet_sentiment = [{"x" : 20, "y": 75}];
@@ -111,8 +135,8 @@
 	function drawGraph(series) {
 	   var graph = new Rickshaw.Graph( {
 	      element: document.getElementById("chart"),
-	      width: 1000,
-	      height: 500,
+	      width: 500,
+	      height: 250,
 	      renderer: 'scatterplot',
 	      series: [
 	         {

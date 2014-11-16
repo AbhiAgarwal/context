@@ -287,7 +287,6 @@ def getArticle(url):
 	currentArticle['stateBelongingTo'] = currentState
 	bloomberg = bloombergSentimentLocation('SMLYUS' + currentState + ' Index')
 	currentArticle['bloombergData'] = bloomberg
-
 	return currentArticle
 
 # Primary route
