@@ -17,7 +17,9 @@
 			<p class="lead">Definition</p>
 			<ul>
 				{% for eachKeyword in article['keywords'] %}
-					<li> {{ eachKeyword['definition'] }} </li>
+					{% if eachKeyword['definition'] != "" %}
+						<li> {{ eachKeyword['definition'] }} </li>
+					{% endif %}
 				{% endfor %}
 			</ul>
 			{% if article['allimages'][:15] %}

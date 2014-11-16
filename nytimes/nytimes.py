@@ -201,7 +201,7 @@ def bloombergSentimentLocation(security1):
 		request.set("periodicitySelection", "DAILY")
 		request.set("startDate", "20140301")
 		request.set("endDate", "20141114")
-		request.set("maxDataPoints", 100)
+		request.set("maxDataPoints", 250)
 
 		# Send the request
 		cid = session.sendRequest(request)
@@ -229,32 +229,41 @@ def twitterSentimentAnalysis(title):
 	twitterExists = False
 	if result is not None:
 		for i in result:
-			if result[i]['title']['main']:
+			if result[i]['title']['title'] == title:
 				twitterExists = True
 				completedData = result[i]
+				break
 	if twitterExists == False:
 		toAdd = {}
 		toAdd['title'] = {}
 		toAdd['title']['main'] = 'main'
 		toAdd['title']['title'] = title
-		results = callTweet(urllib.pathname2url(title), 10000)
+		urlLibName = ''
+		try:
+			urlLibName = urllib.pathname2url(title)
+		except:
+			return []
+		results = callTweet(urlLibName, 1000)
 		completedData = results
 		toAdd['results'] = results
 		firebase.post('/twitter', toAdd)
 	constructedData = []
 	for i in completedData['results']:
-		score = i['sentiment']['doc']['score']
-		created_at = i['created_at']
-		constructedData.append({ 'score': score, 'date': created_at })
+		if 'sentiment' in i:
+			score = i['sentiment']['doc']['score']
+			created_at = i['created_at']
+			constructedData.append({ 'score': score, 'date': created_at })
 	return constructedData
 
 def findSimilarNY(referenceArticles, keywords):
+	referenceTitle = referenceArticles['headline']['main']
 	api = articleAPI(NYTimes_API_KEY)
 	helloArticles = []
 	for i in keywords:
 		m = api.search(q = ("\"" + i['value'] + "\""))
 		for i in m['response']['docs']:
-			helloArticles.append(i)
+			if i['headline']['main'] != referenceTitle:
+				helloArticles.append(i)
 	return cluster_articles(referenceArticles, helloArticles)
 
 # GetArticle from the URL, and return JSON
@@ -308,7 +317,11 @@ def getArticle(url):
 				if x in currentArticle['keywords'][eachKeyword]['value']:
 					currentState = x
 		currentWord = currentArticle['keywords'][eachKeyword]['value']
-		currentDefinition = wikipedia.summary(currentWord, sentences=1)
+		currentDefinition = ''
+		try:
+			currentDefinition = wikipedia.summary(currentWord, sentences=1)
+		except:
+			currentDefinition = ''
 		currentArticle['keywords'][eachKeyword]['definition'] = currentDefinition
 
 	currentArticle['stateBelongingTo'] = currentState
