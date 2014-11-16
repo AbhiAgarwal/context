@@ -72,7 +72,6 @@
 			{% endif %}
 			<p class="lead">Timeline</p>
 			<p class="lead">Semantic Analysis</p>
-			<br><br><br><br><br><br><br><br><br><br>
 			<div id="chart_container">
 				<div id="chart" class="rickshaw_graph"></div>
 				<div id="legend_container">
@@ -100,8 +99,8 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
 	<script src="http://localhost:5000/static/bootstrap-image-gallery.min.js"></script>
-	<script type="text/javascript" src="http://localhost:5000/scripts/d3.v3.js"></script>
-	<script type="text/javascript" src="http://localhost:5000/scripts/rickshaw.js"></script>
+	<script type="text/javascript" src="http://localhost:5000/static/d3.v3.js"></script>
+	<script type="text/javascript" src="http://localhost:5000/static/rickshaw.js"></script>
 	<script>
 
 	var location_sentiment = [{"x" : 0, "y": 20}, {"x" : 5, "y" : 45}, {"x" : 10, "y":65}];
@@ -112,7 +111,7 @@
 	function drawGraph(series) {
 	   var graph = new Rickshaw.Graph( {
 	      element: document.getElementById("chart"),
-	      width: 960,
+	      width: 1000,
 	      height: 500,
 	      renderer: 'scatterplot',
 	      series: [

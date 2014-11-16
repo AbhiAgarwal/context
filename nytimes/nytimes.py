@@ -150,14 +150,21 @@ def processMessage(msg):
 		print msg
 		return
 
+	currentData = []
 	securityDataArray = msg.getElement(SECURITY_DATA)
 	fieldDataArray = securityDataArray.getElement(FIELD_DATA)
 	for i in fieldDataArray.values():
+		first = True
 		date = ''
 		PX_LAST = ''
-		i.elements['date']
 		for x in i.elements():
-			print x
+			if first == True:
+				date = x
+				first = False
+			else:
+				PX_LAST = x
+		currentData.append({"date": str(date), "score": str(PX_LAST)})
+	return currentData
 
 def bloombergSentimentLocation(security1):
     # Start a Session
@@ -178,7 +185,7 @@ def bloombergSentimentLocation(security1):
         request.getElement("fields").appendValue("PX_LAST")
         request.getElement("fields").appendValue("OPEN")
         request.set("periodicityAdjustment", "ACTUAL")
-        request.set("periodicitySelection", "MONTHLY")
+        request.set("periodicitySelection", "DAILY")
         request.set("startDate", "20140301")
         request.set("endDate", "20141114")
         request.set("maxDataPoints", 100)
@@ -192,7 +199,9 @@ def bloombergSentimentLocation(security1):
             # We provide timeout to give the chance for Ctrl+C handling:
             ev = session.nextEvent(500)
             for msg in ev:
-				processMessage(msg)
+            	current_data = processMessage(msg)
+            	if current_data is not None:
+					allMessages.append(processMessage(msg))
             if ev.eventType() == blpapi.Event.RESPONSE:
                 # Response completly received, so we could exit
                 return allMessages
@@ -276,9 +285,8 @@ def getArticle(url):
 		currentDefinition = wikipedia.summary(currentWord, sentences=1)
 		currentArticle['keywords'][eachKeyword]['definition'] = currentDefinition
 	currentArticle['stateBelongingTo'] = currentState
-	bloomberg = bloombergSentimentLocation('SMLYUS' + currentState + ' Index') 
-	#print bloomberg
-	#currentArticle['bloombergData'] = 
+	bloomberg = bloombergSentimentLocation('SMLYUS' + currentState + ' Index')
+	currentArticle['bloombergData'] = bloomberg
 
 	return currentArticle
 
