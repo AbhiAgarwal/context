@@ -62,7 +62,7 @@
 	<script type="text/javascript" src="http://localhost:5000/static/galleria-1.4.2.min.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript">
-	var twitter_data;
+			var twitter_data;
 			var bloomberg_data;
 			$.ajax({
 	         	url: "http://localhost:5000/api/" + window.location.href.split('http://localhost:5000/')[1],
@@ -83,10 +83,13 @@
 		var t_ind = 0;
 		var b_date;
 		var t_date;
-		while (b_ind < bloomberg_data.length) {
-		    b_date = new Date(bloomberg_data[b_ind]["date"]);
-		    series1.push([b_date, parseFloat(bloomberg_data[b_ind]["score"])]);
-		    b_ind++;
+
+		if(typeof bloomberg_data != 'undefined'){
+			while (b_ind < bloomberg_data.length) {
+			    b_date = new Date(bloomberg_data[b_ind]["date"]);
+			    series1.push([b_date, parseFloat(bloomberg_data[b_ind]["score"])]);
+			    b_ind++;
+			}
 		}
 		while (t_ind < twitter_data.length) {
 		    t_date = new Date(twitter_data[t_ind]["date"]);
@@ -94,9 +97,11 @@
 		    t_ind++;
 		}
 
-		series1.sort(function(a,b){
-			return new Date(b[0]) - new Date(a[0]);
-		});
+		if(typeof bloomberg_data != 'undefined'){
+			series1.sort(function(a,b){
+				return new Date(b[0]) - new Date(a[0]);
+			});
+		}
 		series2.sort(function(a,b){
 			return new Date(b[0]) - new Date(a[0]);
 		});
@@ -115,7 +120,9 @@
 		    continuousChart.draw(continuousData, {vAxis: {maxValue: 1}});
 		}
 		loadchart(function () {
-			drawChart(series1, '1');
+			if(typeof bloomberg_data != 'undefined'){
+				drawChart(series1, '1');
+			}
 			drawChart(series2, '2');
 		});
 	</script>
