@@ -34,10 +34,6 @@ sys.setdefaultencoding("utf-8")
 
 # Bloomberg
 import blpapi
-sessionOptions = blpapi.SessionOptions()
-sessionOptions.setServerHost("10.8.8.1")
-sessionOptions.setServerPort(8194)
-session = blpapi.Session(sessionOptions)
 
 # Initialization of Flask
 app = Flask(__name__, static_folder='static', static_url_path='/static')
@@ -120,13 +116,13 @@ def cluster_articles(reference_article, articles):
 		for key in keys:
 			keywords[key["value"]] = 1
 		dataset.append(keywords)
-    
+
 	vectorized = v.fit_transform(dataset)  
-    # trim irrelevant data points: vectorize w.r.t. reference article keywords, vs all keywords.
+	# trim irrelevant data points: vectorize w.r.t. reference article keywords, vs all keywords.
 	trimmed_vectorized = []
 	for i in xrange(0, len(vectorized)):
 		trimmed_vectorized.append(vectorized[i][-num_reference_keys:])
-        
+
 	num_clusters = 1 + len(articles)
 	km = KMeans(n_clusters = num_clusters, init='random', n_init=1, verbose=1)
 	km.fit(trimmed_vectorized)
@@ -180,47 +176,51 @@ def processMessage(msg):
 	return currentData
 
 def bloombergSentimentLocation(security1):
-    # Start a Session
-    if not session.start():
-        print "Failed to start session."
-        return
-    try:
-        # Open service to get historical data from
-        if not session.openService("//blp/refdata"):
-            print "Failed to open //blp/refdata"
-            return
-        # Obtain previously opened service
-        refDataService = session.getService("//blp/refdata")
+	sessionOptions = blpapi.SessionOptions()
+	sessionOptions.setServerHost("10.8.8.1")
+	sessionOptions.setServerPort(8194)
+	session = blpapi.Session(sessionOptions)
+	# Start a Session
+	if not session.start():
+		print "Failed to start session."
+		return
+	try:
+		# Open service to get historical data from
+		if not session.openService("//blp/refdata"):
+			print "Failed to open //blp/refdata"
+			return
+		# Obtain previously opened service
+		refDataService = session.getService("//blp/refdata")
 
-        # Create and fill the request for the historical data
-        request = refDataService.createRequest("HistoricalDataRequest")
-        request.getElement("securities").appendValue(security1)
-        request.getElement("fields").appendValue("PX_LAST")
-        request.getElement("fields").appendValue("OPEN")
-        request.set("periodicityAdjustment", "ACTUAL")
-        request.set("periodicitySelection", "DAILY")
-        request.set("startDate", "20140301")
-        request.set("endDate", "20141114")
-        request.set("maxDataPoints", 100)
+		# Create and fill the request for the historical data
+		request = refDataService.createRequest("HistoricalDataRequest")
+		request.getElement("securities").appendValue(security1)
+		request.getElement("fields").appendValue("PX_LAST")
+		request.getElement("fields").appendValue("OPEN")
+		request.set("periodicityAdjustment", "ACTUAL")
+		request.set("periodicitySelection", "DAILY")
+		request.set("startDate", "20140301")
+		request.set("endDate", "20141114")
+		request.set("maxDataPoints", 100)
 
-        # Send the request
-        cid = session.sendRequest(request)
+		# Send the request
+		cid = session.sendRequest(request)
 
-        allMessages = []
-        # Process received events
-        while(True):
-            # We provide timeout to give the chance for Ctrl+C handling:
-            ev = session.nextEvent(500)
-            for msg in ev:
-            	current_data = processMessage(msg)
-            	if current_data is not None:
+		allMessages = []
+		# Process received events
+		while(True):
+		# We provide timeout to give the chance for Ctrl+C handling:
+			ev = session.nextEvent(500)
+			for msg in ev:
+				current_data = processMessage(msg)
+				if current_data is not None:
 					allMessages.append(processMessage(msg))
-            if ev.eventType() == blpapi.Event.RESPONSE:
-                # Response completly received, so we could exit
-                return allMessages
-    finally:
-        # Stop the session
-        session.stop()
+			if ev.eventType() == blpapi.Event.RESPONSE:
+				# Response completly received, so we could exit
+				return allMessages
+	finally:
+		# Stop the session
+		session.stop()
 
 # AlchemyAPI
 def twitterSentimentAnalysis(title):
@@ -237,7 +237,7 @@ def twitterSentimentAnalysis(title):
 		toAdd['title'] = {}
 		toAdd['title']['main'] = 'main'
 		toAdd['title']['title'] = title
-		results = callTweet(urllib.pathname2url(title), 500)
+		results = callTweet(urllib.pathname2url(title), 10000)
 		completedData = results
 		toAdd['results'] = results
 		firebase.post('/twitter', toAdd)
@@ -310,7 +310,6 @@ def getArticle(url):
 		currentWord = currentArticle['keywords'][eachKeyword]['value']
 		currentDefinition = wikipedia.summary(currentWord, sentences=1)
 		currentArticle['keywords'][eachKeyword]['definition'] = currentDefinition
-
 
 	currentArticle['stateBelongingTo'] = currentState
 	if currentState != "":

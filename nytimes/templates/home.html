@@ -30,7 +30,7 @@
 					{% endfor %}
 				</div>
 			{% endif %}
-			<p class="lead">Timeline</p>
+			<p class="lead">Related</p>
 			<ul>
 				{% for eachArticle in article['similarArticles'][:5] %}
 					<li> <a href="{{eachArticle['url']}}" target="_blank">{{ eachArticle['title'] }} </a> </li>
@@ -39,8 +39,9 @@
 			<table style="width:100%">
 				<tr>
 					<td>
-						<p class="lead">Semantic Analysis</p>
-						<canvas id="myChart" width="1200" height="200"></canvas>
+						<p class="lead">Happiness Index</p>
+						<div id="chart_div2"></div>
+						<div id="chart_div1"></div>
 					</td>
 				</tr>
 				<tr>
@@ -59,43 +60,71 @@
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script type="text/javascript" src="http://localhost:5000/static/galleria-1.4.2.min.js"></script>
-	<script src="http://localhost:5000/static/Chart.min.js"></script>
-	<script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+	var twitter_data;
+			var bloomberg_data;
+			$.ajax({
+	         	url: "http://localhost:5000/api/" + window.location.href.split('http://localhost:5000/')[1],
+	         	success: function(result){
+	                	twitter_data = result['twitter'];
+						bloomberg_data = result['bloombergData'][0];
+	            },
+	            async:   false
+	    	});
+	</script>
+	<script type="text/javascript">
+		function loadchart(myCallback) {
+		    google.load('visualization', '1', {packages:['corechart'], callback: myCallback});
+		}
+		var series1 = [];
+		var series2 = [];
+		var b_ind = 0;
+		var t_ind = 0;
+		var b_date;
+		var t_date;
+		while (b_ind < bloomberg_data.length) {
+		    b_date = new Date(bloomberg_data[b_ind]["date"]);
+		    series1.push([b_date, parseFloat(bloomberg_data[b_ind]["score"])]);
+		    b_ind++;
+		}
+		while (t_ind < twitter_data.length) {
+		    t_date = new Date(twitter_data[t_ind]["date"]);
+		    series2.push([t_date, parseFloat(twitter_data[t_ind]["score"])]);
+		    t_ind++;
+		}
+
+		series1.sort(function(a,b){
+			return new Date(b[0]) - new Date(a[0]);
+		});
+		series2.sort(function(a,b){
+			return new Date(b[0]) - new Date(a[0]);
+		});
+
+		function drawChart(series, id) {
+		    var continuousData = new google.visualization.DataTable();
+		    continuousData.addColumn('datetime', 'Number');
+		    if(id == '1'){
+		    	continuousData.addColumn('number', 'Bloomberg Location');
+		    } else {
+		    	continuousData.addColumn('number', 'Article Tweets');
+		    }
+		    var d = new Date();
+		    continuousData.addRows(series);
+		    var continuousChart = new google.visualization.LineChart(document.getElementById('chart_div'+id));
+		    continuousChart.draw(continuousData, {vAxis: {maxValue: 1}});
+		}
+		loadchart(function () {
+			drawChart(series1, '1');
+			drawChart(series2, '2');
+		});
+	</script>
+	<script type="text/javascript">
 		Galleria.loadTheme('http://localhost:5000/static/galleria/themes/showroom/galleria.showroom.min.js');
 		Galleria.configure({
 		      thumbnails: 'numbers'
 		  });
 		Galleria.run('.galleria', {responsive:true, height:0.300});
-
-		var ctx = document.getElementById("myChart").getContext("2d");
-		var data = {
-		    labels: ["March", "April", "May", "June", "July", "August", "September", "October", "November"],
-		    datasets: [
-		        {
-		            label: "Bloomberg",
-		            fillColor: "rgba(220,220,220,0.2)",
-		            strokeColor: "rgba(220,220,220,1)",
-		            pointColor: "rgba(220,220,220,1)",
-		            pointStrokeColor: "#fff",
-		            pointHighlightFill: "#fff",
-		            pointHighlightStroke: "rgba(220,220,220,1)",
-		            data: [65, 59, 80, 81, 56, 55, 40, 10, 10, 10, 10, 55, 9]
-		        },
-		        {
-		            label: "Twitter",
-		            fillColor: "rgba(151,187,205,0.2)",
-		            strokeColor: "rgba(151,187,205,1)",
-		            pointColor: "rgba(151,187,205,1)",
-		            pointStrokeColor: "#fff",
-		            pointHighlightFill: "#fff",
-		            pointHighlightStroke: "rgba(151,187,205,1)",
-		            data: [28, 48, 40, 19, 86, 27, 90]
-		        }
-		    ]
-		};
-
-		var myLineChart = new Chart(ctx).Line(data);
 	</script>
-
 </body>
 </html>
