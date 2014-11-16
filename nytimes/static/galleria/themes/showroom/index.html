@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Galleria Showroom Theme</title>
+    <style>
+
+      /* Demo styles */
+      html,body{background:#fff;margin:0;}
+      body{border-top:4px solid #002e65;}
+      .content{color:#777;font:14px/1.4 "helvetica neue",arial,sans-serif;max-width:960px;margin:20px auto;padding: 15px;}
+      h1{font-size:18px;font-weight:normal;color:#444;margin:0;}
+      h2{font-size:16px;font-weight:normal;color:#444;margin:2.5em 0 1em;}
+      p{margin:0 0 20px}
+      a{color:#2266BB;text-decoration:none;}
+      a:hover,a:focus,a:active{text-decoration:underline;}
+      pre,code{color:#1F6AC4;background:#efefef;}
+      pre{
+        margin: 20px;
+        padding: 20px 0;
+        border-radius: 8px;
+      }
+      code {
+        border-radius: 4px;
+        padding: 0.1em 0.4em 0.3em;
+      }
+      .cred{margin-top:40px;padding-top:20px;border-top:1px solid #ccc;font-size:11px;}
+
+      /* This rule is read by Galleria to define the gallery height: */
+      .galleria-container:before { padding-bottom: 56.25%; }
+
+    </style>
+
+    <!-- load jQuery -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+
+    <!-- load Galleria -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/galleria/1.3.5/galleria.min.js"></script>
+
+  </head>
+<body>
+  <div class="content">
+    <h1>Galleria Showroom Theme</h1>
+    <p>A clean responsive theme for the <a href="http://galleria.io">Galleria</a> javascript slideshow.<br/>
+    <a href="http://github.com/BluesparkLabs/showroom">http://github.com/BluesparkLabs/showroom</a></p>
+
+
+    <!-- Adding gallery images. We use resized thumbnails here for better performance, but it’s not necessary -->
+    <div id="galleria">
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Biandintz_eta_zaldiak_-_modified2.jpg/800px-Biandintz_eta_zaldiak_-_modified2.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Biandintz_eta_zaldiak_-_modified2.jpg/100px-Biandintz_eta_zaldiak_-_modified2.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Biandintz_eta_zaldiak_-_modified2.jpg/1280px-Biandintz_eta_zaldiak_-_modified2.jpg"
+          data-title="Biandintz eta zaldiak"
+          data-description="Horses on Bianditz mountain, in Navarre, Spain."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Athabasca_Rail_at_Brule_Lake.jpg/800px-Athabasca_Rail_at_Brule_Lake.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Athabasca_Rail_at_Brule_Lake.jpg/100px-Athabasca_Rail_at_Brule_Lake.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Athabasca_Rail_at_Brule_Lake.jpg/1280px-Athabasca_Rail_at_Brule_Lake.jpg"
+          data-title="Athabasca Rail"
+          data-description="The Athabasca River railroad track at the mouth of Brulé Lake in Alberta, Canada."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Back-scattering_crepuscular_rays_panorama_1.jpg/1280px-Back-scattering_crepuscular_rays_panorama_1.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Back-scattering_crepuscular_rays_panorama_1.jpg/100px-Back-scattering_crepuscular_rays_panorama_1.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Back-scattering_crepuscular_rays_panorama_1.jpg/1400px-Back-scattering_crepuscular_rays_panorama_1.jpg"
+          data-title="Back-scattering crepuscular rays"
+          data-description="Picture of the day on Wikimedia Commons 26 September 2010."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Interior_convento_3.jpg/800px-Interior_convento_3.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Interior_convento_3.jpg/120px-Interior_convento_3.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Interior_convento_3.jpg/1400px-Interior_convento_3.jpg"
+          data-title="Interior convento"
+          data-description="Interior view of Yuriria Convent, founded in 1550."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Oxbow_Bend_outlook_in_the_Grand_Teton_National_Park.jpg/800px-Oxbow_Bend_outlook_in_the_Grand_Teton_National_Park.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Oxbow_Bend_outlook_in_the_Grand_Teton_National_Park.jpg/100px-Oxbow_Bend_outlook_in_the_Grand_Teton_National_Park.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Oxbow_Bend_outlook_in_the_Grand_Teton_National_Park.jpg/1280px-Oxbow_Bend_outlook_in_the_Grand_Teton_National_Park.jpg"
+          data-title="Oxbow Bend outlook"
+          data-description="View over the Snake River to the Mount Moran with the Skillet Glacier."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Hazy_blue_hour_in_Grand_Canyon.JPG/800px-Hazy_blue_hour_in_Grand_Canyon.JPG">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Hazy_blue_hour_in_Grand_Canyon.JPG/100px-Hazy_blue_hour_in_Grand_Canyon.JPG",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Hazy_blue_hour_in_Grand_Canyon.JPG/1280px-Hazy_blue_hour_in_Grand_Canyon.JPG"
+          data-title="Hazy blue hour"
+          data-description="Hazy blue hour in Grand Canyon. View from the South Rim."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/2909_vallon_moy_res.jpg/800px-2909_vallon_moy_res.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/2909_vallon_moy_res.jpg/100px-2909_vallon_moy_res.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/2909_vallon_moy_res.jpg/1280px-2909_vallon_moy_res.jpg"
+          data-title="Haute Severaisse valley"
+          data-description="View of Haute Severaisse valley and surrounding summits from the slopes of Les Vernets."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bohinjsko_jezero_2.jpg/800px-Bohinjsko_jezero_2.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bohinjsko_jezero_2.jpg/100px-Bohinjsko_jezero_2.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bohinjsko_jezero_2.jpg/1280px-Bohinjsko_jezero_2.jpg"
+          data-title="Bohinj lake"
+          data-description="Bohinj lake (Triglav National Park, Slovenia) in the morning."
+        >
+      </a>
+      <a href="http://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Bowling_Balls_Beach_2_edit.jpg/800px-Bowling_Balls_Beach_2_edit.jpg">
+        <img
+          src="http://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Bowling_Balls_Beach_2_edit.jpg/100px-Bowling_Balls_Beach_2_edit.jpg",
+          data-big="http://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Bowling_Balls_Beach_2_edit.jpg/1280px-Bowling_Balls_Beach_2_edit.jpg"
+          data-title="Bowling Balls"
+          data-description="Mendocino county, California, USA."
+        >
+      </a>
+    </div>
+
+    <h2>Usage</h2>
+    <p>The Galleria Showroom Theme is now responsive out-of-the-box.</p>
+
+<pre>
+  &lt;div id="galleria"&gt;
+    &lt;a&gt;&lt;img ...&gt;&lt;/a&gt;
+    &lt;a&gt;&lt;img ...&gt;&lt;/a&gt;
+    &lt;a&gt;&lt;img ...&gt;&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+  // Load the showroom theme
+  Galleria.loadTheme('galleria.showroom.min.js');
+
+  // Initialize Galleria
+  Galleria.run('#galleria');
+  &lt;/script&gt;
+</pre>
+
+    <p>The responsive resizing is controled by specifying an aspect ratio in
+    the CSS. The default aspect ratio, seen below, is set to the standard
+    widescreen format of <code>16:9</code>, with the following CSS rule:</p>
+
+<pre>
+  .galleria-container:before {
+    padding-bottom: 56.25%;
+  }
+</pre>
+
+    <p>The aspect ratio may be adjusted to any value in your site's CSS. The formula to calculate the value to use for the <code>padding-bottom</code> is:</p>
+
+<pre>
+  height / width * 100%;
+</pre>
+
+    <p>For further installation instructions and other information please see the <a href="https://github.com/BluesparkLabs/showroom/blob/master/README.md">README on Github</a>.</p>
+
+    <p class="cred"><a href="http://bluespark.com"><img src="http://www.bluespark.com/sites/all/themes/bluespark_omega/favicon.ico" style="vertical-align:middle;"></a> The Galleria Showroom Theme is a <a href="http://bluespark.com">Bluespark</a> production.</p>
+
+  </div>
+
+  <a href="https://github.com/bluesparklabs/showroom"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+  <script>
+
+  // Load the showroom theme
+  Galleria.loadTheme('galleria.showroom.min.js');
+
+  Galleria.configure({
+      thumbnails: 'numbers'
+  });
+  // Initialize Galleria
+  Galleria.run('#galleria');
+
+  </script>
+  </body>
+</html>

@@ -6,10 +6,6 @@
 	<link rel="stylesheet" href="http://localhost:5000/static/style.css">
 	<link rel="stylesheet" href="http://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
 	<link rel="stylesheet" href="http://localhost:5000/static/bootstrap-image-gallery.min.css">
-	<link type="text/css" rel="stylesheet" href="http://localhost:5000/static/graph.css">
-	<link type="text/css" rel="stylesheet" href="http://localhost:5000/static/detail.css">
-	<link type="text/css" rel="stylesheet" href="http://localhost:5000/static/legend.css">
-	<link type="text/css" rel="stylesheet" href="http://localhost:5000/static/lines.css">
 </head>
 <body>
 	{% if article %}
@@ -26,46 +22,10 @@
 			</ul>
 			{% if article['multimedia'] %}
 				<p class="lead">Images</p>
-				<!-- The Bootstrap Image Gallery lightbox, should be a child element of the document body -->
-				<div id="blueimp-gallery" class="blueimp-gallery">
-				    <!-- The container for the modal slides -->
-				    <div class="slides"></div>
-				    <!-- Controls for the borderless lightbox -->
-				    <h3 class="title"></h3>
-				    <a class="prev">‹</a>
-				    <a class="next">›</a>
-				    <a class="close">×</a>
-				    <a class="play-pause"></a>
-				    <ol class="indicator"></ol>
-				    <!-- The modal dialog, which will be used to wrap the lightbox content -->
-				    <div class="modal fade">
-				        <div class="modal-dialog">
-				            <div class="modal-content">
-				                <div class="modal-header">
-				                    <button type="button" class="close" aria-hidden="true">&times;</button>
-				                    <h4 class="modal-title"></h4>
-				                </div>
-				                <div class="modal-body next"></div>
-				                <div class="modal-footer">
-				                    <button type="button" class="btn btn-default pull-left prev">
-				                        <i class="glyphicon glyphicon-chevron-left"></i>
-				                        Previous
-				                    </button>
-				                    <button type="button" class="btn btn-primary next">
-				                        Next
-				                        <i class="glyphicon glyphicon-chevron-right"></i>
-				                    </button>
-				                </div>
-				            </div>
-				        </div>
-				    </div>
-				</div>
-				<div id="links">
+				<div class="galleria">
 					{% for eachImage in article['img'] %}
 						{% if eachImage != "http://graphics8.nytimes.com/images/multimedia/10x10.gif" %}
-						<a href="{{eachImage}}" title="Banana" data-gallery>
-							<img src="{{eachImage}}" height="100px" width="100px" alt="">
-						</a>
+							<img src="{{eachImage}}">
 						{% endif %}
 					{% endfor %}
 				</div>
@@ -75,24 +35,7 @@
 				<tr>
 					<td>
 						<p class="lead">Semantic Analysis</p>
-						<div id="chart_container">
-							<div id="chart" class="rickshaw_graph"></div>
-							<div id="legend_container">
-							      <div id="smoother" title="Smoothing"></div>
-							      <div class="rickshaw_legend" as="">
-							         <ul>
-							            <li class="line">
-							               <div class="swatch" style="background-color: rgb(255, 102, 0);"></div>
-							               <span class="label">Location Sentiment</span>
-							            </li>
-							            <li class="line">
-							               <div class="swatch" style="background-color: rgb(0, 132, 180);"></div>
-							               <span class="label">Article Sentiment</span>
-							            </li>
-							         </ul>
-							      </div>
-							</div>
-						</div>
+						<canvas id="myChart" width="1200" height="200"></canvas>
 					</td>
 				</tr>
 				<tr>
@@ -108,54 +51,47 @@
 			</table>
 		</div>
 	{% endif %}
-	<div>
-		{% if article['bloombergData'] %}
-			{% for eachBloom in article['bloombergData'] %}
-				<p>{{eachBloom}}</p>
-			{% endfor %}
-		{% endif %}
-	</div>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="http://blueimp.github.io/Gallery/js/jquery.blueimp-gallery.min.js"></script>
-	<script src="http://localhost:5000/static/bootstrap-image-gallery.min.js"></script>
-	<script type="text/javascript" src="http://localhost:5000/static/d3.v3.js"></script>
-	<script type="text/javascript" src="http://localhost:5000/static/rickshaw.js"></script>
-	
+	<script type="text/javascript" src="http://localhost:5000/static/galleria-1.4.2.min.js"></script>
+	<script src="http://localhost:5000/static/Chart.min.js"></script>
 	<script>
+		Galleria.loadTheme('http://localhost:5000/static/galleria/themes/showroom/galleria.showroom.min.js');
+		Galleria.configure({
+		      thumbnails: 'numbers'
+		  });
+		Galleria.run('.galleria', {responsive:true, height:0.300});
 
-	var bloombergData = [];
-	var aNumber = 0;
+		var ctx = document.getElementById("myChart").getContext("2d");
+		var data = {
+		    labels: ["March", "April", "May", "June", "July", "August", "September", "October", "November"],
+		    datasets: [
+		        {
+		            label: "Bloomberg",
+		            fillColor: "rgba(220,220,220,0.2)",
+		            strokeColor: "rgba(220,220,220,1)",
+		            pointColor: "rgba(220,220,220,1)",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(220,220,220,1)",
+		            data: [65, 59, 80, 81, 56, 55, 40, 10, 10, 10, 10, 55, 9]
+		        },
+		        {
+		            label: "Twitter",
+		            fillColor: "rgba(151,187,205,0.2)",
+		            strokeColor: "rgba(151,187,205,1)",
+		            pointColor: "rgba(151,187,205,1)",
+		            pointStrokeColor: "#fff",
+		            pointHighlightFill: "#fff",
+		            pointHighlightStroke: "rgba(151,187,205,1)",
+		            data: [28, 48, 40, 19, 86, 27, 90]
+		        }
+		    ]
+		};
 
-	var location_sentiment = [{"x" : 0, "y": 20}, {"x" : 5, "y" : 45}, {"x" : 10, "y":65}];
-	var tweet_sentiment = [{"x" : 20, "y": 75}];
-	var seriesData = [ location_sentiment, tweet_sentiment ];
 
-	// instantiate our graph!
-	function drawGraph(series) {
-	   var graph = new Rickshaw.Graph( {
-	      element: document.getElementById("chart"),
-	      width: 500,
-	      height: 250,
-	      renderer: 'scatterplot',
-	      series: [
-	         {
-	            color: "#ff9030",
-	            name: "Bloomberg",
-	            data: series[0],
-	         }, {
-	            color: "#0084b4",
-	            name: "Twitter",
-	            data: series[1],
-	         }
-	      ]
-	   } );
-
-	   graph.renderer.dotSize = 6;
-	   //new Rickshaw.Graph.HoverDetail({ graph: graph });
-	   graph.render();
-	}
-	drawGraph(seriesData);
+		var myLineChart = new Chart(ctx).Line(data);
 	</script>
+
 </body>
 </html>

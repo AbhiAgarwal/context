@@ -1,0 +1,5 @@
+{% if article['bloombergData'] %}
+			{% for eachBloom in article['bloombergData'] %}
+				<p>{{eachBloom}}</p>
+			{% endfor %}
+		{% endif %}
