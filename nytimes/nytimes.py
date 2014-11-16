@@ -1,8 +1,14 @@
 # Standard Lib
 import re, requests, json, urllib2, wikipedia, praw, sys, urllib
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
+# Firebase
+from firebase import firebase
+
+# NLTK
+import nltk
+
+# Analyze
+from analyze import callTweet
 
 # NYTimes, Beautifulsoup, and Cookies
 from nytimesarticle import articleAPI
@@ -15,11 +21,8 @@ from flask import Flask, jsonify, render_template, url_for
 # Scikit-learn
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.cluster import KMeans
-
-# DocumentDB
-import pydocumentdb.documents as documents
-import pydocumentdb.document_client as document_client
-import pydocumentdb.errors as errors
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 # Bloomberg
 import blpapi
@@ -28,21 +31,12 @@ sessionOptions.setServerHost("10.8.8.1")
 sessionOptions.setServerPort(8194)
 session = blpapi.Session(sessionOptions)
 
-# NLTK
-import nltk
-
-# Analyze
-from analyze import callTweet
-
 # Initialization of Flask
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 NYTimes_API_KEY = 'ca470e1e91b15a82cc0d4350b08a3c0b:14:70189328'
 
-# DocumentDB
-DocumentDBHost = 'https://context.documents.azure.com:443/'
-DocumentDBMasterKey = 'HnmYu5yI0lqevYzY+nu6ATn7VLCLJZYL047VUW1UMt9jDKYSqJP5FvYmijtKFnhJ25aPo8T8e1ExUCWOvW7ULQ=='
-client = document_client.DocumentClient(DocumentDBHost, {'masterKey': DocumentDBMasterKey})
-databases = client.ReadDatabases()
+# Initialization of Firebase
+firebase = firebase.FirebaseApplication('https://contxt.firebaseio.com/', None)
 
 # Clustering algorithm
 def cluster_articles(reference_article, articles):
@@ -62,7 +56,6 @@ def cluster_articles(reference_article, articles):
 		keys = article["keywords"]
 		for key in keys:
 			keywords[key["value"]] = 1
-            
 		dataset.append(keywords)
         
 	vectorized = v.fit_transform(dataset)  
@@ -131,7 +124,29 @@ def bloombergSentimentLocation(security1):
 
 # AlchemyAPI
 def twitterSentimentAnalysis(title):
-	print callTweet(urllib.pathname2url(title), 150)
+	result = firebase.get('/twitter', None)
+	completedData = []
+	twitterExists = False
+	if result is not None:
+		for i in result:
+			if result[i]['title']['main']:
+				twitterExists = True
+				completedData = result[i]
+	if twitterExists == False:
+		toAdd = {}
+		toAdd['title'] = {}
+		toAdd['title']['main'] = 'main'
+		toAdd['title']['title'] = title
+		results = callTweet(urllib.pathname2url(title), 500)
+		completedData = results
+		toAdd['results'] = results
+		firebase.post('/twitter', toAdd)
+	constructedData = []
+	for i in completedData['results']:
+		score = i['sentiment']['doc']['score']
+		created_at = i['created_at']
+		constructedData.append({ 'score': score, 'date': created_at })
+	return constructedData
 
 # GetArticle from the URL, and return JSON
 def getArticle(url):
@@ -142,10 +157,11 @@ def getArticle(url):
 	title = mainPagesoup.find("h1")
 	p = mainPagesoup.find_all("p")
 	img = mainPagesoup.find_all("img")
+	title = title.getText()
 
 	# Use API to get keywords, etc.
 	api = articleAPI(NYTimes_API_KEY)
-	articles = api.search(q = ("\"" + title.getText() + "\""), hl = True)
+	articles = api.search(q = ("\"" + title + "\""), hl = True)
 	currentArticle = articles['response']['docs'][0]
 
 	# Article text Engine
@@ -161,6 +177,7 @@ def getArticle(url):
 	currentArticle['allText'] = allText	
 	currentArticle['nltk'] = nltkText
 	currentArticle['img'] = allImages
+	currentArticle['twitter'] = twitterSentimentAnalysis(title)
 
 	# Definition Engine
 	for eachKeyword in range(0, len(currentArticle['keywords'])):
