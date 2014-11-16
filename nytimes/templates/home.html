@@ -20,7 +20,7 @@
 					<li> {{ eachKeyword['definition'] }} </li>
 				{% endfor %}
 			</ul>
-			{% if article['multimedia'] %}
+			{% if article['allimages'][:15] %}
 				<p class="lead">Images</p>
 				<div class="galleria">
 					{% for eachImage in article['allimages'][0] %}
@@ -31,6 +31,11 @@
 				</div>
 			{% endif %}
 			<p class="lead">Timeline</p>
+			<ul>
+				{% for eachArticle in article['similarArticles'][:5] %}
+					<li> <a href="{{eachArticle['url']}}" target="_blank">{{ eachArticle['title'] }} </a> </li>
+				{% endfor %}
+			</ul>
 			<table style="width:100%">
 				<tr>
 					<td>
@@ -88,7 +93,6 @@
 		        }
 		    ]
 		};
-
 
 		var myLineChart = new Chart(ctx).Line(data);
 	</script>

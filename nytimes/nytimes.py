@@ -273,7 +273,7 @@ def getArticle(url):
 	NYTimesExist = False
 	if result is not None:
 		for i in result:
-			if result[i]['title']['main']:
+			if result[i]['title']['main'] == title:
 				twitterExists = True
 				completedData = result[i]
 
