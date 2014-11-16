@@ -1,5 +1,6 @@
 # Standard Lib
 import re, requests, json, urllib2, wikipedia, praw, sys, urllib
+from itertools import izip
 
 # Firebase
 from firebase import firebase
@@ -37,6 +38,61 @@ NYTimes_API_KEY = 'ca470e1e91b15a82cc0d4350b08a3c0b:14:70189328'
 
 # Initialization of Firebase
 firebase = firebase.FirebaseApplication('https://contxt.firebaseio.com/', None)
+
+# StateNameToCodels
+stateNameToCode = dict()
+stateNameToCode["Alabama"] = "AL"
+stateNameToCode["Alaska"] = "AK"
+stateNameToCode["Arizona"] = "AZ"
+stateNameToCode["Arkansas"] = "AR"
+stateNameToCode["California"] = "CA"
+stateNameToCode["Colorado"] = "CO"
+stateNameToCode["Connecticut"] = "CT"
+stateNameToCode["Delaware"] = "DE"
+stateNameToCode["District of Columbia"] = "DC"
+stateNameToCode["Florida"] = "FL"
+stateNameToCode["Georgia"] = "GA"
+stateNameToCode["Hawaii"] = "HI"
+stateNameToCode["Idaho"] = "ID"
+stateNameToCode["Illinois"] = "IL"
+stateNameToCode["Indiana"] = "IN"
+stateNameToCode["Iowa"] = "IA"
+stateNameToCode["Kansas"] = "KS"
+stateNameToCode["Kentucky"] = "KY"
+stateNameToCode["Louisiana"] = "LA"
+stateNameToCode["Maine"] = "ME"
+stateNameToCode["Maryland"] = "MD"
+stateNameToCode["Massachusetts"] = "MA"
+stateNameToCode["Michigan"] = "MI"
+stateNameToCode["Minnesota"] = "MN"
+stateNameToCode["Mississippi"] = "MS"
+stateNameToCode["Missouri"] = "MO"
+stateNameToCode["Montana"] = "MT"
+stateNameToCode["Nebraska"] = "NE"
+stateNameToCode["Nevada"] = "NV"
+stateNameToCode["New Hampshire"] = "NH"
+stateNameToCode["New Jersey"] = "NJ"
+stateNameToCode["NJ"] = "NJ"
+stateNameToCode["New Mexico"] = "NM"
+stateNameToCode["New York"] = "NY"
+stateNameToCode["North Carolina"] = "NC"
+stateNameToCode["North Dakota"] = "ND"
+stateNameToCode["Ohio"] = "OH"
+stateNameToCode["Oklahoma"] = "OK"
+stateNameToCode["Oregon"] = "OR"
+stateNameToCode["Pennsylvania"] = "PA"
+stateNameToCode["Rhode Island"] = "RI"
+stateNameToCode["South Carolina"] = "SC"
+stateNameToCode["South Dakota"] = "SD"
+stateNameToCode["Tennessee"] = "TN"
+stateNameToCode["Texas"] = "TX"
+stateNameToCode["Utah"] = "UT"
+stateNameToCode["Vermont"] = "VT"
+stateNameToCode["Virginia"] = "VA"
+stateNameToCode["Washington"] = "WA"
+stateNameToCode["West Virginia"] = "WV"
+stateNameToCode["Wisconsin"] = "WI"
+stateNameToCode["Wyoming"] = "WY"
 
 # Clustering algorithm
 def cluster_articles(reference_article, articles):
@@ -81,6 +137,28 @@ def cluster_articles(reference_article, articles):
 
 	return related_articles_urls
 
+SECURITY_DATA = blpapi.Name("securityData")
+SECURITY = blpapi.Name("security")
+FIELD_DATA = blpapi.Name("fieldData")
+FIELD_EXCEPTIONS = blpapi.Name("fieldExceptions")
+FIELD_ID = blpapi.Name("fieldId")
+ERROR_INFO = blpapi.Name("errorInfo")
+
+def processMessage(msg):
+	if not msg.hasElement(SECURITY_DATA):
+		print "Unexpected message:"
+		print msg
+		return
+
+	securityDataArray = msg.getElement(SECURITY_DATA)
+	fieldDataArray = securityDataArray.getElement(FIELD_DATA)
+	for i in fieldDataArray.values():
+		date = ''
+		PX_LAST = ''
+		i.elements['date']
+		for x in i.elements():
+			print x
+
 def bloombergSentimentLocation(security1):
     # Start a Session
     if not session.start():
@@ -106,7 +184,7 @@ def bloombergSentimentLocation(security1):
         request.set("maxDataPoints", 100)
 
         # Send the request
-        session.sendRequest(request)
+        cid = session.sendRequest(request)
 
         allMessages = []
         # Process received events
@@ -114,7 +192,7 @@ def bloombergSentimentLocation(security1):
             # We provide timeout to give the chance for Ctrl+C handling:
             ev = session.nextEvent(500)
             for msg in ev:
-                allMessages.append(msg)
+				processMessage(msg)
             if ev.eventType() == blpapi.Event.RESPONSE:
                 # Response completly received, so we could exit
                 return allMessages
@@ -160,6 +238,14 @@ def getArticle(url):
 	title = title.getText()
 
 	# Use API to get keywords, etc.
+	result = firebase.get('/nytimes', None)
+	NYTimesExist = False
+	if result is not None:
+		for i in result:
+			if result[i]['title']['main']:
+				twitterExists = True
+				completedData = result[i]
+
 	api = articleAPI(NYTimes_API_KEY)
 	articles = api.search(q = ("\"" + title + "\""), hl = True)
 	currentArticle = articles['response']['docs'][0]
@@ -180,10 +266,19 @@ def getArticle(url):
 	currentArticle['twitter'] = twitterSentimentAnalysis(title)
 
 	# Definition Engine
+	currentState = ''
 	for eachKeyword in range(0, len(currentArticle['keywords'])):
+		if currentArticle['keywords'][eachKeyword]['name'] == "glocations":
+			for x in stateNameToCode.keys():
+				if x in currentArticle['keywords'][eachKeyword]['value']:
+					currentState = x
 		currentWord = currentArticle['keywords'][eachKeyword]['value']
 		currentDefinition = wikipedia.summary(currentWord, sentences=1)
 		currentArticle['keywords'][eachKeyword]['definition'] = currentDefinition
+	currentArticle['stateBelongingTo'] = currentState
+	bloomberg = bloombergSentimentLocation('SMLYUS' + currentState + ' Index') 
+	#print bloomberg
+	#currentArticle['bloombergData'] = 
 
 	return currentArticle
 

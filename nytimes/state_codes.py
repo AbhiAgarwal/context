@@ -1,5 +1,4 @@
 stateNameToCode = dict()
-
 stateNameToCode["Alabama"] = "AL"
 stateNameToCode["Alaska"] = "AK"
 stateNameToCode["Arizona"] = "AZ"
