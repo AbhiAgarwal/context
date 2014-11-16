@@ -5,6 +5,13 @@ from itertools import izip
 # Firebase
 from firebase import firebase
 
+# Imgur
+from imgurpython import ImgurClient
+
+imgurClient_id = '09682e2b1a11cd4'
+imgurClient_secret = '917548ca300c5536c0a7953d1564683b28356c15'
+imgurClient = ImgurClient(imgurClient_id, imgurClient_secret)
+
 # NLTK
 import nltk
 
@@ -144,6 +151,13 @@ FIELD_EXCEPTIONS = blpapi.Name("fieldExceptions")
 FIELD_ID = blpapi.Name("fieldId")
 ERROR_INFO = blpapi.Name("errorInfo")
 
+def searchImgur(title):
+	allStuffs = imgurClient.gallery_search(title, advanced=None, sort='time', window='all', page=0)
+	constructURL = []
+	for i in allStuffs:
+		constructURL.append(i.link)
+	return constructURL
+
 def processMessage(msg):
 	if not msg.hasElement(SECURITY_DATA):
 		print "Unexpected message:"
@@ -159,11 +173,11 @@ def processMessage(msg):
 		PX_LAST = ''
 		for x in i.elements():
 			if first == True:
-				date = x
+				date = x.getValueAsString()
 				first = False
 			else:
-				PX_LAST = x
-		currentData.append({"date": str(date), "score": str(PX_LAST)})
+				PX_LAST = x.getValueAsString()
+		currentData.append({"date": date, "score": PX_LAST})
 	return currentData
 
 def bloombergSentimentLocation(security1):
@@ -275,6 +289,7 @@ def getArticle(url):
 	currentArticle['twitter'] = twitterSentimentAnalysis(title)
 
 	# Definition Engine
+	imagesRuleThemAll = []
 	currentState = ''
 	for eachKeyword in range(0, len(currentArticle['keywords'])):
 		if currentArticle['keywords'][eachKeyword]['name'] == "glocations":
@@ -284,9 +299,22 @@ def getArticle(url):
 		currentWord = currentArticle['keywords'][eachKeyword]['value']
 		currentDefinition = wikipedia.summary(currentWord, sentences=1)
 		currentArticle['keywords'][eachKeyword]['definition'] = currentDefinition
+
+
 	currentArticle['stateBelongingTo'] = currentState
-	bloomberg = bloombergSentimentLocation('SMLYUS' + currentState + ' Index')
-	currentArticle['bloombergData'] = bloomberg
+	if currentState != "":
+		bloomberg = bloombergSentimentLocation('SMLYUS' + currentState + ' Index')
+		currentArticle['bloombergData'] = bloomberg
+	else:
+		currentArticle['bloombergData'] = []
+
+	currentLengthX = len(currentArticle['keywords'])/2
+	currentArticle['bestRankedKeyword'] = currentArticle['keywords'][currentLengthX]['value']
+	imagesRuleThemAll.append(searchImgur(currentArticle['keywords'][currentLengthX]['value']))
+	for i in allImages:
+		imagesRuleThemAll[0].append(i)
+	currentArticle['allimages'] = imagesRuleThemAll
+	currentArticle['allimages'][0] = currentArticle['allimages'][0][::-1]
 	return currentArticle
 
 # Primary route

@@ -23,7 +23,7 @@
 			{% if article['multimedia'] %}
 				<p class="lead">Images</p>
 				<div class="galleria">
-					{% for eachImage in article['img'] %}
+					{% for eachImage in article['allimages'][0] %}
 						{% if eachImage != "http://graphics8.nytimes.com/images/multimedia/10x10.gif" %}
 							<img src="{{eachImage}}">
 						{% endif %}
