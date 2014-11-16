@@ -120,7 +120,7 @@ def cluster_articles(reference_article, articles):
 		for key in keys:
 			keywords[key["value"]] = 1
 		dataset.append(keywords)
-        
+    
 	vectorized = v.fit_transform(dataset)  
     # trim irrelevant data points: vectorize w.r.t. reference article keywords, vs all keywords.
 	trimmed_vectorized = []
@@ -131,7 +131,6 @@ def cluster_articles(reference_article, articles):
 	km = KMeans(n_clusters = num_clusters, init='random', n_init=1, verbose=1)
 	km.fit(trimmed_vectorized)
 	reference_label = km.labels_[0]
-	print km.labels_
 
 	for i in xrange(1, len(km.labels_)):
 		if (reference_label == km.labels_[i]):
@@ -140,7 +139,7 @@ def cluster_articles(reference_article, articles):
 	related_articles_urls = []
 	for i in xrange(0, len(related_articles_inds)):
 		index = related_articles_inds[i] - 1
-		related_articles_urls.append(articles[index]["web_url"])
+		related_articles_urls.append({"url": articles[index]["web_url"], "title": articles[index]['headline']['main']})
 
 	return related_articles_urls
 
@@ -249,6 +248,15 @@ def twitterSentimentAnalysis(title):
 		constructedData.append({ 'score': score, 'date': created_at })
 	return constructedData
 
+def findSimilarNY(referenceArticles, keywords):
+	api = articleAPI(NYTimes_API_KEY)
+	helloArticles = []
+	for i in keywords:
+		m = api.search(q = ("\"" + i['value'] + "\""))
+		for i in m['response']['docs']:
+			helloArticles.append(i)
+	return cluster_articles(referenceArticles, helloArticles)
+
 # GetArticle from the URL, and return JSON
 def getArticle(url):
 	# Beautiful Soup scraping for Article
@@ -271,6 +279,9 @@ def getArticle(url):
 
 	api = articleAPI(NYTimes_API_KEY)
 	articles = api.search(q = ("\"" + title + "\""), hl = True)
+
+	similarArticles = findSimilarNY(articles['response']['docs'][0], articles['response']['docs'][0]['keywords'])
+
 	currentArticle = articles['response']['docs'][0]
 
 	# Article text Engine
@@ -315,6 +326,7 @@ def getArticle(url):
 		imagesRuleThemAll[0].append(i)
 	currentArticle['allimages'] = imagesRuleThemAll
 	currentArticle['allimages'][0] = currentArticle['allimages'][0][::-1]
+	currentArticle['similarArticles'] = similarArticles
 	return currentArticle
 
 # Primary route
