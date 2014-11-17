@@ -8,8 +8,8 @@ from firebase import firebase
 # Imgur
 from imgurpython import ImgurClient
 
-imgurClient_id = '09682e2b1a11cd4'
-imgurClient_secret = '917548ca300c5536c0a7953d1564683b28356c15'
+imgurClient_id = ''
+imgurClient_secret = ''
 imgurClient = ImgurClient(imgurClient_id, imgurClient_secret)
 
 # NLTK
@@ -37,10 +37,10 @@ import blpapi
 
 # Initialization of Flask
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-NYTimes_API_KEY = 'ca470e1e91b15a82cc0d4350b08a3c0b:14:70189328'
+NYTimes_API_KEY = ''
 
 # Initialization of Firebase
-firebase = firebase.FirebaseApplication('https://contxt.firebaseio.com/', None)
+firebase = firebase.FirebaseApplication('', None)
 
 # StateNameToCodels
 stateNameToCode = dict()
@@ -177,8 +177,8 @@ def processMessage(msg):
 
 def bloombergSentimentLocation(security1):
 	sessionOptions = blpapi.SessionOptions()
-	sessionOptions.setServerHost("10.8.8.1")
-	sessionOptions.setServerPort(8194)
+	sessionOptions.setServerHost("")
+	sessionOptions.setServerPort()
 	session = blpapi.Session(sessionOptions)
 	# Start a Session
 	if not session.start():

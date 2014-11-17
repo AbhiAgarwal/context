@@ -35,7 +35,7 @@
 			<p class="lead">Related</p>
 			<ul>
 				{% for eachArticle in article['similarArticles'][:5] %}
-					<li> <a href="{{eachArticle['url']}}" target="_blank">{{ eachArticle['title'] }} </a> </li>
+					<li> <a href="{{eachArticle['url']}}" target="_blank">{{ eachArticle['title']|safe }} </a> </li>
 				{% endfor %}
 			</ul>
 			<table style="width:100%">
